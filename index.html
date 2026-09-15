@@ -1,0 +1,1759 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MCC · muneasy control center</title>
+<style>
+:root{
+  --bg:#07090f;
+  --panel:#101219;
+  --panel-2:#151821;
+  --panel-3:#1b1f2a;
+  --text:#f7f7fa;
+  --muted:#8f95a5;
+  --line:rgba(255,255,255,.08);
+  --line-strong:rgba(255,255,255,.14);
+  --shadow:0 18px 60px rgba(0,0,0,.33);
+  --r:22px;
+  --r-sm:14px;
+  --grad:linear-gradient(135deg,#ff8d74 0%,#d865ff 47%,#63d7ff 100%);
+  --grad-soft:linear-gradient(135deg,rgba(255,141,116,.14),rgba(216,101,255,.12) 46%,rgba(99,215,255,.12) 100%);
+  --grad-violet:linear-gradient(135deg,#8f73ff 0%,#d865ff 100%);
+  --grad-cyan:linear-gradient(135deg,#57c9ff 0%,#6ee7c8 100%);
+  --grad-warm:linear-gradient(135deg,#ff8d74 0%,#ffbe78 100%);
+  --coral:#ff8d74;
+  --violet:#b66cff;
+  --cyan:#63d7ff;
+  --green:#5ae0a0;
+  --yellow:#ffd36a;
+  --red:#ff6f7f;
+}
+*{box-sizing:border-box}
+
+html, body, *{
+  scrollbar-width: thin;
+  scrollbar-color: rgba(164,120,255,.55) rgba(255,255,255,.05);
+}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:rgba(255,255,255,.04);border-radius:999px}
+::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg, rgba(255,141,116,.9), rgba(216,101,255,.9), rgba(99,215,255,.9));
+  border-radius:999px;border:2px solid rgba(9,10,14,.75)
+}
+::-webkit-scrollbar-thumb:hover{
+  background:linear-gradient(180deg, rgba(255,141,116,1), rgba(216,101,255,1), rgba(99,215,255,1));
+}
+
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:
+    radial-gradient(circle at 12% -5%, rgba(182,108,255,.18), transparent 26rem),
+    radial-gradient(circle at 88% 5%, rgba(99,215,255,.14), transparent 28rem),
+    radial-gradient(circle at 48% 28%, rgba(255,141,116,.07), transparent 32rem),
+    linear-gradient(180deg, rgba(255,255,255,.015), rgba(255,255,255,0)),
+    var(--bg);
+  color:var(--text);
+  font-family:Inter, ui-sans-serif, -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  min-height:100vh;
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+a{color:inherit}
+.app{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100vh}
+.sidebar{
+  position:sticky;top:0;height:100vh;padding:24px 18px;
+  border-right:1px solid var(--line);
+  background:rgba(8,9,13,.72);backdrop-filter:blur(24px);
+  z-index:10;
+}
+.brand{display:flex;align-items:center;gap:12px;padding:4px 10px 28px}
+.brandmark{
+  width:38px;height:38px;border-radius:13px;position:relative;
+  background:var(--grad);box-shadow:0 0 42px rgba(182,108,255,.22);
+}
+.brandmark:before{
+  content:"";position:absolute;inset:5px;border-radius:9px;background:#0b0c10;
+}
+.brandmark:after{
+  content:":)";position:absolute;inset:0;display:grid;place-items:center;
+  font-weight:900;font-size:14px;letter-spacing:-1px;
+}
+.brand strong{display:block;font-size:15px;letter-spacing:.02em}
+.brand span{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.nav{display:grid;gap:6px}
+.nav button{
+  appearance:none;border:0;background:transparent;color:#a8adbb;
+  display:flex;align-items:center;gap:11px;padding:12px 13px;border-radius:14px;text-align:left;
+}
+.nav button:hover,.nav button.active{background:#151822;color:white}
+.nav i{width:20px;height:20px;display:grid;place-items:center;font-style:normal;opacity:.9}
+.nav .active i{background:var(--grad);background-clip:text;-webkit-background-clip:text;color:transparent}
+.sidebar-foot{position:absolute;left:18px;right:18px;bottom:20px}
+.signal{
+  padding:13px;border:1px solid var(--line);background:#101219;border-radius:16px;
+  color:var(--muted);font-size:11px;line-height:1.5;
+}
+.signal strong{color:#fff;display:flex;gap:8px;align-items:center;margin-bottom:3px}
+.dot{width:7px;height:7px;border-radius:999px;background:var(--green);box-shadow:0 0 13px rgba(90,224,160,.5)}
+
+.main{min-width:0}
+.topbar{
+  min-height:76px;display:flex;align-items:center;gap:16px;justify-content:space-between;
+  padding:15px 28px;border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:8;background:rgba(8,9,13,.74);backdrop-filter:blur(22px);
+}
+.search{position:relative;flex:1;max-width:520px}
+.search input{
+  width:100%;border:1px solid var(--line);background:#101219;color:white;border-radius:14px;
+  padding:12px 14px 12px 39px;outline:none;
+}
+.search input:focus{border-color:rgba(182,108,255,.42);box-shadow:0 0 0 4px rgba(182,108,255,.08)}
+.search:before{content:"⌕";position:absolute;left:14px;top:8px;color:var(--muted);font-size:22px}
+.top-actions{display:flex;gap:9px}
+.btn{
+  border:1px solid var(--line);background:#141720;color:#fff;border-radius:13px;padding:10px 14px;
+}
+.btn:hover{border-color:var(--line-strong);transform:translateY(-1px)}
+.btn.primary{border:0;background:var(--grad);color:#090a0e;font-weight:800}
+.content{padding:30px 28px 70px;max-width:1600px;margin:0 auto}
+
+.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#858b9a;font-weight:800}
+.hero{display:flex;justify-content:space-between;gap:24px;align-items:flex-end;margin-bottom:22px}
+.hero h1{font-size:clamp(28px,3.2vw,46px);letter-spacing:-.04em;margin:7px 0 8px;line-height:1}
+.hero p{margin:0;color:var(--muted);max-width:670px;line-height:1.55}
+.datepill{border:1px solid var(--line);background:#11131a;border-radius:999px;padding:9px 13px;color:#aeb3c0;font-size:12px;white-space:nowrap}
+
+.today-grid{display:grid;grid-template-columns:1.45fr repeat(3,1fr);gap:14px;margin:20px 0 14px}
+.card{
+  background:
+    linear-gradient(180deg,rgba(20,23,32,.985),rgba(14,16,23,.985)),
+    var(--grad-soft);
+  border:1px solid var(--line);
+  border-radius:var(--r);
+  box-shadow:var(--shadow);
+  position:relative;
+}
+.card:after{
+  content:"";
+  position:absolute;inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0) 25%);
+  opacity:.9;
+}
+.focus-card{
+  padding:22px;position:relative;overflow:hidden;min-height:170px;
+  background:
+    radial-gradient(circle at 82% 18%, rgba(182,108,255,.16), transparent 30%),
+    radial-gradient(circle at 12% 92%, rgba(99,215,255,.08), transparent 24%),
+    linear-gradient(180deg,rgba(20,23,32,.98),rgba(14,16,23,.98));
+}
+.focus-card:before{
+  content:"";position:absolute;width:260px;height:260px;border-radius:50%;
+  background:radial-gradient(circle,rgba(182,108,255,.18),transparent 65%);
+  right:-70px;top:-110px;pointer-events:none;
+}
+.focus-top{display:flex;justify-content:space-between;gap:12px}
+.badge{font-size:10px;letter-spacing:.11em;text-transform:uppercase;font-weight:900;padding:7px 9px;border-radius:999px;background:#202431;color:#afb5c4}
+.badge.hot{background:rgba(255,111,127,.11);color:#ff94a1;border:1px solid rgba(255,111,127,.18)}
+.focus-card h2{margin:22px 0 6px;font-size:24px;letter-spacing:-.03em}
+.focus-card p{color:var(--muted);margin:0;max-width:82%;line-height:1.45;font-size:13px}
+.focus-footer{display:flex;justify-content:space-between;align-items:center;margin-top:18px;color:#a9aebe;font-size:12px}
+.micro{
+  padding:18px 18px 16px;min-height:170px;display:flex;flex-direction:column;justify-content:space-between;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(99,215,255,.10), transparent 30%),
+    linear-gradient(180deg,rgba(20,23,32,.98),rgba(14,16,23,.98));
+}
+.micro .num{font-size:31px;font-weight:800;letter-spacing:-.04em}
+.micro .label{color:var(--muted);font-size:12px}
+.micro .trend{font-size:11px;color:#b5bac6}
+.gradtext{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.statusrow{display:flex;gap:7px;margin-top:12px}
+.statusbar{height:5px;border-radius:10px;background:#262a36;flex:1;overflow:hidden}
+.statusbar span{height:100%;display:block;border-radius:10px;background:var(--grad)}
+
+.grid-main{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(330px,.65fr);gap:14px;margin-top:14px}
+.section-card{
+  padding:20px;
+  background:
+    radial-gradient(circle at 75% 0%, rgba(99,215,255,.08), transparent 24%),
+    radial-gradient(circle at 0% 100%, rgba(216,101,255,.07), transparent 22%),
+    linear-gradient(180deg,rgba(20,23,32,.98),rgba(14,16,23,.98));
+}
+.section-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}
+.section-head h3{margin:0;font-size:15px;letter-spacing:-.015em}
+.section-head small{color:var(--muted)}
+.linkbtn{border:0;background:transparent;color:#a9afbd;font-size:12px;padding:5px}
+.linkbtn:hover{color:white}
+
+.focus-list{display:grid;gap:10px}
+.task{
+  display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;
+  padding:13px;border:1px solid var(--line);border-radius:15px;background:#12151d;
+}
+.task-index{
+  width:29px;height:29px;border-radius:10px;background:#1d212c;display:grid;place-items:center;
+  color:#aeb3c0;font-size:11px;font-weight:800;
+}
+.task strong{display:block;font-size:13px}
+.task span{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.task .arrow{color:#5f6574;font-size:18px}
+.task:hover{border-color:rgba(182,108,255,.25);transform:translateY(-1px)}
+
+.orbit-wrap{position:relative;height:360px;overflow:hidden}
+.orbit-center{
+  position:absolute;left:50%;top:50%;translate:-50% -50%;
+  width:88px;height:88px;border-radius:28px;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255,255,255,.06), transparent 45%),
+    linear-gradient(135deg, rgba(255,141,116,.10), rgba(216,101,255,.18), rgba(99,215,255,.14));
+  border:1px solid rgba(255,255,255,.12);
+  display:grid;place-items:center;text-align:center;z-index:3;
+  box-shadow:0 0 55px rgba(182,108,255,.18), 0 0 90px rgba(99,215,255,.08);
+}
+.orbit-center strong{font-size:12px;display:block}
+.orbit-center span{font-size:9px;color:var(--muted)}
+.ring{position:absolute;left:50%;top:50%;translate:-50% -50%;border:1px solid rgba(255,255,255,.08);border-radius:50%}
+.r1{width:170px;height:170px}.r2{width:280px;height:280px}.r3{width:390px;height:390px}
+.node{
+  position:absolute;border:1px solid var(--line-strong);background:#171a23;border-radius:12px;
+  padding:8px 9px;min-width:82px;text-align:center;font-size:10px;color:#d9dce5;box-shadow:0 8px 28px rgba(0,0,0,.28);
+  transition:.2s ease;
+}
+.node:hover{transform:scale(1.05);border-color:rgba(255,255,255,.22)}
+.node:before{content:"";width:6px;height:6px;border-radius:999px;display:inline-block;margin-right:5px;background:var(--node,#777)}
+.node.hot{box-shadow:0 0 0 1px rgba(255,111,127,.1),0 10px 30px rgba(255,111,127,.08)}
+.n1{left:50%;top:18px;translate:-50% 0}
+.n2{right:18px;top:82px}
+.n3{right:44px;bottom:62px}
+.n4{left:50%;bottom:12px;translate:-50% 0}
+.n5{left:24px;bottom:78px}
+.n6{left:16px;top:86px}
+
+.project-section{margin-top:28px}
+.projects-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:14px}
+.projects-head h2{font-size:21px;margin:5px 0 0;letter-spacing:-.03em}
+.filters{display:flex;gap:7px;flex-wrap:wrap}
+.filter{
+  border:1px solid var(--line);
+  background:#101219;color:#9fa5b4;border-radius:999px;padding:8px 11px;font-size:11px;
+}
+.filter.active,.filter:hover{
+  color:white;
+  background:linear-gradient(135deg, rgba(255,141,116,.10), rgba(216,101,255,.12), rgba(99,215,255,.09));
+}
+.projects{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.project{
+  padding:16px;min-height:218px;position:relative;overflow:hidden;transition:.2s ease;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255,255,255,.03), transparent 28%),
+    var(--project-tint, linear-gradient(180deg,rgba(17,20,27,.98),rgba(13,15,21,.98)));
+}
+.project:hover{
+  transform:translateY(-4px);
+  border-color:rgba(255,255,255,.16);
+  box-shadow:0 22px 60px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.03) inset;
+}
+.project:before{content:"";position:absolute;inset:0 0 auto 0;height:2px;background:var(--project-grad,var(--grad))}
+.project-top{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.project-icon{width:38px;height:38px;border-radius:13px;background:#1c202b;display:grid;place-items:center;font-weight:900;font-size:12px}
+.pstatus{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:#9da4b3}
+.project h4{margin:17px 0 5px;font-size:16px;letter-spacing:-.02em}
+.project .desc{color:var(--muted);font-size:11px;line-height:1.5;min-height:48px}
+.project-meta{display:grid;gap:7px;margin-top:14px}
+.meta-line{display:flex;justify-content:space-between;gap:10px;font-size:10px;color:#8f95a5}
+.meta-line b{color:#cdd0d9;font-weight:600}
+.progress{height:5px;background:#222631;border-radius:10px;overflow:hidden;margin-top:6px}
+.progress span{display:block;height:100%;border-radius:10px;background:var(--project-grad,var(--grad))}
+.project-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+.next{font-size:10px;color:#b7bbc7}
+.open{border:0;background:#1b1f2a;color:#fff;width:28px;height:28px;border-radius:9px}
+
+.revenue{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.revbox{padding:13px;border:1px solid var(--line);border-radius:14px;background:#11141b}
+.revbox strong{display:block;font-size:18px}
+.revbox span{font-size:10px;color:var(--muted)}
+
+.modal{
+  position:fixed;inset:0;background:rgba(4,5,8,.72);backdrop-filter:blur(12px);
+  display:none;align-items:center;justify-content:center;padding:20px;z-index:50;
+}
+.modal.show{display:flex}
+.modal-card{
+  width:min(620px,100%);max-height:86vh;overflow:auto;padding:22px;border-radius:26px;background:#12151d;border:1px solid var(--line-strong);
+  box-shadow:0 30px 100px rgba(0,0,0,.55);
+}
+.modal-head{display:flex;justify-content:space-between;align-items:center}
+.modal-head h3{margin:0;font-size:20px}
+.close{width:34px;height:34px;border:0;border-radius:10px;background:#1e222d;color:white}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.field{display:grid;gap:6px}
+.field.full{grid-column:1/-1}
+.field label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#858b9a;font-weight:800}
+.field input,.field select{
+  width:100%;background:#0d0f15;color:white;border:1px solid var(--line);border-radius:12px;padding:11px 12px;outline:none;
+}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.hidden{display:none!important}
+
+@media (max-width:1180px){
+  .projects{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .today-grid{grid-template-columns:1.5fr 1fr 1fr}
+  .today-grid .micro:last-child{display:none}
+}
+@media (max-width:920px){
+  .app{grid-template-columns:78px 1fr}
+  .sidebar{padding:20px 12px}
+  .brand{padding-left:8px}.brand strong,.brand span,.nav button span,.sidebar-foot{display:none}
+  .nav button{justify-content:center}.nav i{font-size:17px}
+  .grid-main{grid-template-columns:1fr}
+  .today-grid{grid-template-columns:1fr 1fr}
+  .focus-card{grid-column:1/-1}
+}
+@media (max-width:640px){
+  .app{display:block}.sidebar{display:none}
+  .topbar{padding:12px 14px}.content{padding:22px 14px 60px}
+  .top-actions .btn:not(.primary){display:none}
+  .hero{align-items:flex-start;flex-direction:column}.datepill{display:none}
+  .today-grid{grid-template-columns:1fr}.focus-card{grid-column:auto}
+  .micro{min-height:130px}.today-grid .micro:last-child{display:flex}
+  .projects{grid-template-columns:1fr}
+  .projects-head{align-items:flex-start;flex-direction:column}
+  .formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}
+}
+
+/* ===== MCC V0.2 · Project workspace ===== */
+.project{cursor:pointer}
+.project .open{cursor:pointer}
+
+.workspace{
+  position:fixed;inset:0;z-index:60;pointer-events:none;
+}
+.workspace.show{pointer-events:auto}
+.workspace-backdrop{
+  position:absolute;inset:0;background:rgba(3,4,7,.62);backdrop-filter:blur(9px);
+  opacity:0;transition:.24s ease;
+}
+.workspace.show .workspace-backdrop{opacity:1}
+.workspace-panel{
+  position:absolute;right:0;top:0;height:100%;width:min(760px,94vw);
+  background:
+    radial-gradient(circle at 92% 5%,rgba(99,215,255,.14),transparent 28rem),
+    radial-gradient(circle at 8% 0%,rgba(216,101,255,.14),transparent 24rem),
+    radial-gradient(circle at 40% 100%,rgba(255,141,116,.08),transparent 28rem),
+    #0d0f15;
+  border-left:1px solid var(--line-strong);
+  box-shadow:-30px 0 100px rgba(0,0,0,.48);
+  transform:translateX(102%);transition:.28s cubic-bezier(.2,.8,.2,1);
+  display:flex;flex-direction:column;
+}
+.workspace.show .workspace-panel{transform:translateX(0)}
+.ws-head{
+  padding:22px 24px 18px;border-bottom:1px solid var(--line);
+  background:rgba(13,15,21,.75);backdrop-filter:blur(18px);
+}
+.ws-headrow{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}
+.ws-titlewrap{display:flex;gap:13px;align-items:center}
+.ws-icon{
+  width:44px;height:44px;border-radius:15px;background:#191d27;border:1px solid var(--line);
+  display:grid;place-items:center;font-weight:900;font-size:12px;
+}
+.ws-head h2{margin:3px 0 5px;font-size:25px;letter-spacing:-.035em}
+.ws-sub{font-size:11px;color:var(--muted)}
+.ws-close{width:38px;height:38px;border:1px solid var(--line);border-radius:12px;background:#171a23;color:#fff}
+.ws-tabs{display:flex;gap:6px;overflow:auto;padding-top:17px}
+.ws-tab{
+  border:1px solid transparent;background:rgba(255,255,255,.02);color:#8f95a5;border-radius:999px;
+  padding:8px 11px;font-size:11px;white-space:nowrap;
+}
+.ws-tab.active{
+  background:linear-gradient(135deg, rgba(255,141,116,.12), rgba(216,101,255,.13), rgba(99,215,255,.10));
+  color:white;border-color:rgba(255,255,255,.09);
+  box-shadow:0 0 0 1px rgba(255,255,255,.02) inset;
+}
+.ws-body{padding:22px 24px 70px;overflow:auto}
+.ws-pane{display:none}
+.ws-pane.active{display:block}
+
+.ws-overview{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:18px;
+}
+.ws-stat{padding:14px;border:1px solid var(--line);border-radius:15px;background:#12151d}
+.ws-stat span{display:block;color:var(--muted);font-size:10px;margin-bottom:4px}
+.ws-stat strong{font-size:13px}
+.ws-next{
+  padding:16px;border-radius:17px;border:1px solid rgba(182,108,255,.22);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(99,215,255,.10), transparent 35%),
+    linear-gradient(135deg,rgba(182,108,255,.12),rgba(99,215,255,.08), rgba(255,141,116,.06));
+  margin-bottom:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,.18);
+}
+.ws-next .eyebrow{margin-bottom:7px}
+.ws-next strong{font-size:15px}
+
+.capture{
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(216,101,255,.08), transparent 28%),
+    #12151d;
+  padding:14px;margin-bottom:20px;
+}
+.capture-top{display:flex;gap:8px}
+.capture input{
+  flex:1;min-width:0;background:#0d0f15;color:white;border:1px solid var(--line);
+  border-radius:12px;padding:11px 12px;outline:none;
+}
+.capture input:focus{border-color:rgba(182,108,255,.38)}
+.capture select{
+  width:126px;background:#0d0f15;color:#dfe2eb;border:1px solid var(--line);
+  border-radius:12px;padding:0 10px;outline:none;
+}
+.capture button{border:0;background:var(--grad);color:#090a0e;font-weight:900;border-radius:12px;padding:0 14px}
+.capture small{display:block;color:#6f7584;font-size:10px;margin-top:9px}
+
+.item-section{margin-top:22px}
+.item-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.item-head h4{margin:0;font-size:13px}
+.item-head span{font-size:10px;color:var(--muted)}
+.item-list{display:grid;gap:8px}
+.idea-item{
+  display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;
+  border:1px solid var(--line);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.015), rgba(255,255,255,0)),
+    #11141b;
+  border-radius:14px;padding:11px 12px;
+}
+.idea-type{
+  font-size:9px;text-transform:uppercase;letter-spacing:.08em;font-weight:900;
+  padding:6px 7px;border-radius:999px;background:#1d212c;color:#b8bdc9;
+}
+.idea-type.idea{color:#d792ff;background:rgba(216,101,255,.1)}
+.idea-type.feature{color:#77ddff;background:rgba(99,215,255,.1)}
+.idea-type.task{color:#ffab91;background:rgba(255,141,116,.1)}
+.idea-type.decision{color:#82e6b2;background:rgba(90,224,160,.1)}
+.idea-copy strong{font-size:12px;display:block;font-weight:650}
+.idea-copy small{display:block;color:#737989;margin-top:3px;font-size:9px}
+.idea-actions{display:flex;gap:5px}
+.idea-actions button{
+  width:28px;height:28px;border:1px solid var(--line);background:#191d27;color:#9ea4b2;
+  border-radius:9px;font-size:11px;
+}
+.idea-actions button:hover{color:white;border-color:var(--line-strong)}
+
+.feature-board{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:8px;overflow:auto}
+.feature-col{min-width:150px;border:1px solid var(--line);background:#101219;border-radius:15px;padding:10px}
+.feature-col h5{font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin:0 0 8px;color:#8d93a2}
+.feature-chip{
+  padding:9px;border:1px solid var(--line);background:#171a23;border-radius:11px;
+  font-size:10px;line-height:1.35;margin-top:7px;cursor:pointer;
+}
+.feature-chip:hover{border-color:rgba(182,108,255,.26)}
+.empty-note{padding:18px;border:1px dashed var(--line-strong);border-radius:14px;color:#686f7e;font-size:11px;text-align:center}
+
+.notes-area{
+  width:100%;min-height:180px;resize:vertical;background:#0d0f15;color:#e8e9ee;
+  border:1px solid var(--line);border-radius:14px;padding:13px;outline:none;line-height:1.55;
+}
+.notes-area:focus{border-color:rgba(182,108,255,.36)}
+.save-note{margin-top:10px}
+.link-list{display:grid;gap:8px}
+.link-row{display:grid;grid-template-columns:130px 1fr auto;gap:8px}
+.link-row input{
+  min-width:0;background:#0d0f15;color:#fff;border:1px solid var(--line);border-radius:11px;padding:10px;
+}
+.link-row button{border:1px solid var(--line);background:#191d27;color:#fff;border-radius:10px;padding:0 10px}
+
+@media(max-width:640px){
+  .workspace-panel{width:100vw}
+  .ws-body{padding:18px 14px 60px}.ws-head{padding:18px 14px 14px}
+  .ws-overview{grid-template-columns:1fr 1fr}
+  .capture-top{display:grid;grid-template-columns:1fr auto}
+  .capture select{width:100%;grid-column:1/2}.capture button{grid-column:2/3;grid-row:1/3}
+  .feature-board{grid-template-columns:repeat(4,180px)}
+  .link-row{grid-template-columns:1fr}.link-row button{padding:9px}
+}
+
+
+/* ===== MCC V0.5 · Pixel Hermann Mood System ===== */
+.mood-pod{
+  position:fixed;
+  right:22px;
+  bottom:22px;
+  width:min(320px, calc(100vw - 26px));
+  z-index:70;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:22px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(216,101,255,.12), transparent 32%),
+    radial-gradient(circle at 0% 100%, rgba(99,215,255,.10), transparent 28%),
+    rgba(13,15,21,.94);
+  backdrop-filter:blur(16px);
+  box-shadow:0 25px 80px rgba(0,0,0,.40);
+  overflow:hidden;
+}
+.mood-pod:before{
+  content:"";
+  position:absolute;inset:0;
+  background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,0) 26%);
+  pointer-events:none;
+}
+.mood-top{
+  display:flex;gap:12px;align-items:flex-start;
+  padding:14px 14px 10px;
+}
+.pixel-wrap{
+  flex:0 0 auto;
+  width:74px;height:74px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.08);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,.06), transparent 40%),
+    linear-gradient(180deg, rgba(90,224,160,.09), rgba(13,15,21,.98));
+  display:grid;place-items:center;
+}
+.pixel-wrap svg{
+  width:54px;height:54px;
+  shape-rendering:crispEdges;
+  image-rendering:pixelated;
+}
+.mood-copy{min-width:0}
+.mood-copy strong{
+  display:block;
+  font-size:13px;
+  margin-top:1px;
+}
+.mood-copy p{
+  margin:5px 0 0;
+  color:#c7cbda;
+  font-size:12px;
+  line-height:1.45;
+}
+.mood-quote{
+  margin-top:8px;
+  color:#848b9a;
+  font-size:10px;
+  line-height:1.4;
+}
+.mood-controls{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  padding:0 14px 14px;
+}
+.mood-btn{
+  border:1px solid rgba(255,255,255,.08);
+  background:#171b24;
+  color:#aab0be;
+  border-radius:999px;
+  padding:8px 10px;
+  font-size:11px;
+}
+.mood-btn.active,
+.mood-btn:hover{
+  color:white;
+  background:linear-gradient(135deg, rgba(255,141,116,.13), rgba(216,101,255,.13), rgba(99,215,255,.12));
+}
+.sarg-banner{
+  display:none;
+  margin:0 14px 14px;
+  padding:11px 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.08);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(216,101,255,.12), transparent 36%),
+    linear-gradient(135deg, rgba(28,29,39,.96), rgba(16,17,23,.98));
+}
+.sarg-banner .eyebrow{color:#b8a8d9}
+.sarg-banner strong{
+  display:block;
+  margin-top:4px;
+  font-size:12px;
+}
+.sarg-banner p{
+  margin:5px 0 0;
+  color:#bcc0cd;
+  font-size:11px;
+  line-height:1.45;
+}
+
+/* mood-dependent design shifts */
+body[data-mood="happy"]{
+  background:
+    radial-gradient(circle at 12% -5%, rgba(182,108,255,.20), transparent 26rem),
+    radial-gradient(circle at 88% 5%, rgba(99,215,255,.18), transparent 28rem),
+    radial-gradient(circle at 48% 28%, rgba(255,141,116,.10), transparent 32rem),
+    linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)),
+    var(--bg);
+}
+body[data-mood="happy"] .card,
+body[data-mood="happy"] .project,
+body[data-mood="happy"] .workspace-panel{
+  box-shadow:0 22px 72px rgba(0,0,0,.34), 0 0 0 1px rgba(255,255,255,.02) inset;
+}
+body[data-mood="happy"] .brandmark{
+  box-shadow:0 0 52px rgba(216,101,255,.30), 0 0 38px rgba(99,215,255,.18);
+}
+
+body[data-mood="okay"] .mood-pod{
+  background:
+    radial-gradient(circle at 100% 0%, rgba(216,101,255,.10), transparent 32%),
+    radial-gradient(circle at 0% 100%, rgba(99,215,255,.08), transparent 28%),
+    rgba(13,15,21,.94);
+}
+
+body[data-mood="tired"]{
+  background:
+    radial-gradient(circle at 12% -5%, rgba(182,108,255,.12), transparent 26rem),
+    radial-gradient(circle at 88% 5%, rgba(99,215,255,.09), transparent 28rem),
+    radial-gradient(circle at 48% 28%, rgba(255,141,116,.05), transparent 32rem),
+    linear-gradient(180deg, rgba(255,255,255,.01), rgba(255,255,255,0)),
+    var(--bg);
+}
+body[data-mood="tired"] .card,
+body[data-mood="tired"] .project,
+body[data-mood="tired"] .mood-pod{
+  filter:saturate(.92);
+}
+body[data-mood="tired"] .mood-pod{
+  border-color:rgba(255,255,255,.08);
+}
+
+body[data-mood="chaos"]{
+  background:
+    radial-gradient(circle at 12% -5%, rgba(182,108,255,.24), transparent 28rem),
+    radial-gradient(circle at 88% 5%, rgba(99,215,255,.22), transparent 29rem),
+    radial-gradient(circle at 48% 28%, rgba(255,141,116,.12), transparent 30rem),
+    radial-gradient(circle at 75% 75%, rgba(90,224,160,.08), transparent 20rem),
+    linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)),
+    var(--bg);
+}
+body[data-mood="chaos"] .badge.hot{
+  box-shadow:0 0 24px rgba(255,111,127,.18);
+}
+body[data-mood="chaos"] .project:hover{
+  transform:translateY(-5px) scale(1.01);
+}
+body[data-mood="chaos"] .mood-pod{
+  background:
+    radial-gradient(circle at 100% 0%, rgba(216,101,255,.18), transparent 32%),
+    radial-gradient(circle at 0% 100%, rgba(99,215,255,.16), transparent 28%),
+    rgba(13,15,21,.95);
+}
+
+body[data-mood="sad"]{
+  background:
+    radial-gradient(circle at 12% -5%, rgba(112,88,170,.18), transparent 28rem),
+    radial-gradient(circle at 88% 5%, rgba(85,102,155,.11), transparent 30rem),
+    radial-gradient(circle at 48% 28%, rgba(255,141,116,.04), transparent 34rem),
+    linear-gradient(180deg, rgba(255,255,255,.012), rgba(255,255,255,0)),
+    #05060b;
+}
+body[data-mood="sad"] .card,
+body[data-mood="sad"] .project,
+body[data-mood="sad"] .workspace-panel{
+  border-color:rgba(177,154,216,.13);
+}
+body[data-mood="sad"] .mood-pod{
+  background:
+    radial-gradient(circle at 100% 0%, rgba(129,91,185,.16), transparent 32%),
+    radial-gradient(circle at 0% 100%, rgba(91,116,160,.12), transparent 28%),
+    rgba(9,10,14,.96);
+}
+body[data-mood="sad"] .pixel-wrap{
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,.05), transparent 40%),
+    linear-gradient(180deg, rgba(177,154,216,.09), rgba(13,15,21,.98));
+}
+body[data-mood="sad"] .sarg-banner{display:block}
+body[data-mood="sad"] .brand strong:after{
+  content:" · Herr Simon Sarg Mode";
+  color:#7f87a0;
+  font-size:10px;
+  font-weight:600;
+  margin-left:6px;
+}
+
+@media(max-width:640px){
+  .mood-pod{
+    right:12px;
+    bottom:12px;
+    width:calc(100vw - 24px);
+  }
+  .mood-top{padding:12px 12px 9px}
+  .mood-controls{padding:0 12px 12px}
+}
+
+
+/* ===== MCC V0.5 · mood switch fix + stronger modes ===== */
+body{
+  transition:background .45s ease, filter .35s ease;
+}
+body .card,
+body .project,
+body .workspace-panel,
+body .mood-pod,
+body .topbar,
+body .sidebar{
+  transition:background .4s ease,border-color .4s ease,box-shadow .4s ease,filter .4s ease,transform .25s ease;
+}
+
+/* TOP — brighter, optimistic, colorful */
+body[data-mood="happy"]{
+  --mood-accent:#6fffd1;
+}
+body[data-mood="happy"] .topbar,
+body[data-mood="happy"] .sidebar{
+  background:rgba(8,9,13,.66);
+}
+body[data-mood="happy"] .card{
+  border-color:rgba(121,225,255,.13);
+}
+body[data-mood="happy"] .focus-card{
+  background:
+    radial-gradient(circle at 82% 18%,rgba(216,101,255,.24),transparent 32%),
+    radial-gradient(circle at 12% 92%,rgba(99,215,255,.16),transparent 28%),
+    linear-gradient(180deg,rgba(22,24,35,.98),rgba(13,15,23,.98));
+}
+body[data-mood="happy"] .eyebrow{color:#aab7cc}
+body[data-mood="happy"] .mood-btn.active{
+  box-shadow:0 0 26px rgba(99,215,255,.15);
+}
+
+/* OKAY — canonical muneasy */
+body[data-mood="okay"]{
+  --mood-accent:#d865ff;
+}
+
+/* TIRED — lower contrast, warmer, calmer */
+body[data-mood="tired"]{
+  --mood-accent:#93a6c7;
+}
+body[data-mood="tired"] .main{
+  filter:saturate(.78) brightness(.94);
+}
+body[data-mood="tired"] .mood-pod{
+  filter:none;
+}
+body[data-mood="tired"] .focus-card{
+  background:
+    radial-gradient(circle at 85% 10%,rgba(116,131,165,.12),transparent 30%),
+    linear-gradient(180deg,rgba(18,20,28,.98),rgba(12,14,20,.98));
+}
+body[data-mood="tired"] .project{
+  filter:saturate(.72);
+}
+
+/* CHAOS — more energetic gradient activity */
+body[data-mood="chaos"]{
+  --mood-accent:#ff8d74;
+}
+body[data-mood="chaos"] .focus-card{
+  background:
+    radial-gradient(circle at 90% 0%,rgba(255,141,116,.20),transparent 30%),
+    radial-gradient(circle at 12% 95%,rgba(216,101,255,.19),transparent 26%),
+    radial-gradient(circle at 48% 20%,rgba(99,215,255,.10),transparent 24%),
+    linear-gradient(180deg,rgba(22,23,33,.98),rgba(13,14,21,.98));
+}
+body[data-mood="chaos"] .orbit-center{
+  box-shadow:0 0 72px rgba(216,101,255,.28),0 0 110px rgba(99,215,255,.13);
+}
+body[data-mood="chaos"] .node{
+  border-color:rgba(255,255,255,.18);
+}
+body[data-mood="chaos"] .mood-pod{
+  box-shadow:0 25px 90px rgba(0,0,0,.44),0 0 55px rgba(216,101,255,.13);
+}
+
+/* SAD / HERR SIMON SARG — theatrical gothic nonsense */
+body[data-mood="sad"]{
+  --mood-accent:#8f6cae;
+}
+body[data-mood="sad"] .main{
+  filter:saturate(.48) contrast(1.03);
+}
+body[data-mood="sad"] .mood-pod{
+  filter:none;
+}
+body[data-mood="sad"] .topbar,
+body[data-mood="sad"] .sidebar{
+  background:rgba(4,5,9,.88);
+}
+body[data-mood="sad"] .card{
+  background:
+    radial-gradient(circle at 100% 0%,rgba(110,83,140,.07),transparent 24%),
+    linear-gradient(180deg,rgba(15,15,21,.99),rgba(8,9,13,.99));
+  border-color:rgba(141,113,166,.17);
+  box-shadow:0 20px 70px rgba(0,0,0,.52);
+}
+body[data-mood="sad"] .focus-card{
+  background:
+    radial-gradient(circle at 78% 12%,rgba(105,73,128,.17),transparent 30%),
+    radial-gradient(circle at 10% 90%,rgba(72,87,113,.10),transparent 28%),
+    linear-gradient(180deg,rgba(15,15,21,.99),rgba(7,8,12,.99));
+}
+body[data-mood="sad"] .gradtext{
+  background:linear-gradient(135deg,#c6b1d4,#7f8ba7);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+body[data-mood="sad"] .project:before,
+body[data-mood="sad"] .progress span{
+  filter:saturate(.35) brightness(.78);
+}
+body[data-mood="sad"] .orbit-center{
+  background:linear-gradient(135deg,rgba(94,67,113,.18),rgba(43,47,62,.18));
+  box-shadow:0 0 55px rgba(94,67,113,.18);
+}
+body[data-mood="sad"] .mood-pod{
+  border-color:rgba(167,139,184,.18);
+  box-shadow:0 25px 90px rgba(0,0,0,.56),0 0 55px rgba(102,73,120,.12);
+}
+body[data-mood="sad"] .pixel-wrap{
+  box-shadow:inset 0 0 30px rgba(112,86,132,.08);
+}
+body[data-mood="sad"] .mood-btn.active{
+  background:linear-gradient(135deg,rgba(97,74,112,.28),rgba(46,52,70,.30));
+  border-color:rgba(180,151,195,.16);
+}
+body[data-mood="sad"] .sarg-banner{
+  animation:sargArrival .42s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes sargArrival{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+
+/* ===== MCC V0.5 · Herrmann AI ===== */
+.herrmann-ask{
+  width:auto!important;
+  min-width:72px;
+  padding:0 9px!important;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  font-weight:750;
+  font-size:10px!important;
+  color:#bfffe8!important;
+  border-color:rgba(90,224,160,.16)!important;
+  background:rgba(90,224,160,.07)!important;
+}
+.herrmann-ask:hover{
+  color:#eafff8!important;
+  border-color:rgba(90,224,160,.30)!important;
+  background:rgba(90,224,160,.11)!important;
+}
+.herrmann-ask.loading{
+  opacity:.72;
+  pointer-events:none;
+}
+.herrmann-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:#5ae0a0;
+  box-shadow:0 0 12px rgba(90,224,160,.45);
+}
+.herrmann-review{
+  grid-column:1/-1;
+  margin-top:2px;
+  padding:12px 13px;
+  border:1px solid rgba(90,224,160,.13);
+  border-radius:13px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(90,224,160,.08), transparent 34%),
+    radial-gradient(circle at 100% 0%, rgba(99,215,255,.06), transparent 32%),
+    #0e1217;
+}
+.herrmann-review-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:8px;
+}
+.herrmann-review-name{
+  display:flex;align-items:center;gap:7px;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.10em;
+  font-weight:900;
+  color:#8fe8bd;
+}
+.herrmann-verdict{
+  display:flex;align-items:center;gap:7px;
+  font-size:10px;
+}
+.herrmann-score{
+  width:30px;height:30px;border-radius:10px;
+  display:grid;place-items:center;
+  font-size:10px;font-weight:900;
+  background:#171d22;
+  border:1px solid var(--line);
+}
+.herrmann-verdict strong{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+}
+.herrmann-review p{
+  margin:0;
+  color:#d3d8e2;
+  font-size:11px;
+  line-height:1.52;
+}
+.herrmann-review-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
+.herrmann-mini{
+  padding:9px 10px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:rgba(255,255,255,.018);
+}
+.herrmann-mini span{
+  display:block;
+  font-size:8px;
+  text-transform:uppercase;
+  letter-spacing:.10em;
+  color:#717988;
+  font-weight:900;
+  margin-bottom:4px;
+}
+.herrmann-mini b{
+  display:block;
+  color:#cbd0db;
+  font-size:10px;
+  font-weight:600;
+  line-height:1.45;
+}
+.herrmann-review[data-verdict="stark"] .herrmann-score,
+.herrmann-review[data-verdict="gut"] .herrmann-score{
+  color:#8df0bc;border-color:rgba(90,224,160,.18);background:rgba(90,224,160,.07);
+}
+.herrmann-review[data-verdict="meh"] .herrmann-score{
+  color:#ffd36a;border-color:rgba(255,211,106,.17);background:rgba(255,211,106,.06);
+}
+.herrmann-review[data-verdict="riskant"] .herrmann-score{
+  color:#ff8f9b;border-color:rgba(255,111,127,.18);background:rgba(255,111,127,.06);
+}
+.herrmann-error{
+  grid-column:1/-1;
+  margin-top:3px;
+  padding:10px 11px;
+  border-radius:11px;
+  border:1px solid rgba(255,111,127,.15);
+  background:rgba(255,111,127,.05);
+  color:#dca9af;
+  font-size:10px;
+  line-height:1.45;
+}
+@media(max-width:640px){
+  .herrmann-review-grid{grid-template-columns:1fr}
+  .herrmann-ask{min-width:68px}
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brandmark" aria-hidden="true"></div>
+      <div><strong>muneasy</strong><span>control center · MCC</span></div>
+    </div>
+    <nav class="nav">
+      <button class="active" data-view="all"><i>◈</i><span>Overview</span></button>
+      <button data-scroll="today"><i>◎</i><span>Today</span></button>
+      <button data-scroll="projects"><i>▦</i><span>Projects</span></button>
+      <button data-filter="client"><i>◫</i><span>Kunden</span></button>
+      <button data-filter="internal"><i>⌁</i><span>DRK / intern</span></button>
+      <button data-filter="own"><i>✦</i><span>muneasy lab</span></button>
+      <button data-scroll="finance"><i>↗</i><span>Revenue</span></button>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="signal"><strong><span class="dot"></span>MCC online</strong>Eine Wahrheit. Alle Projekte.</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="search"><input id="search" placeholder="Projekt, Kunde, Aufgabe suchen …"></div>
+      <div class="top-actions">
+        <button class="btn" id="focusBtn">Focus mode</button>
+        <button class="btn primary" id="newProject">+ Projekt</button>
+      </div>
+    </header>
+
+    <div class="content">
+      <section class="hero">
+        <div>
+          <div class="eyebrow">MCC · muneasy control center</div>
+          <h1>Alles im Orbit.</h1>
+          <p>Ein Ort für Projekte, Prioritäten, Umsatz und den einen nächsten Schritt. Nicht mehr alles gleichzeitig wichtig.</p>
+        </div>
+        <div class="datepill" id="datePill"></div>
+      </section>
+
+      <section class="today-grid" id="today">
+        <article class="card focus-card">
+          <div class="focus-top">
+            <span class="badge hot">Priority now</span><span class="eyebrow">01 / today</span>
+          </div>
+          <h2>ProBeMo · Ministeriumsreife</h2>
+          <p>Stabilität, Audit-Log und saubere Viewer-/Rollenlogik abschließen. Alles andere darf dahinter warten.</p>
+          <div class="focus-footer"><span>Nächster Schritt · Löschvorgänge nachvollziehbar machen</span><span>→</span></div>
+        </article>
+        <article class="card micro">
+          <div><div class="label">aktive Projekte</div><div class="num gradtext" id="activeCount">8</div></div>
+          <div><div class="trend">4 Kunde · 2 intern · 2 lab</div><div class="statusrow"><div class="statusbar"><span style="width:76%"></span></div></div></div>
+        </article>
+        <article class="card micro" id="finance">
+          <div><div class="label">monatlich geplant</div><div class="num">390 €</div></div>
+          <div class="trend">+ SpencerHill · Vergütung offen</div>
+        </article>
+        <article class="card micro">
+          <div><div class="label">heute wirklich wichtig</div><div class="num">3</div></div>
+          <div class="trend">Der Rest bleibt bewusst im Orbit.</div>
+        </article>
+      </section>
+
+      <section class="grid-main">
+        <article class="card section-card">
+          <div class="section-head"><div><div class="eyebrow">next three</div><h3>Heute bewegen</h3></div><button class="linkbtn">Prioritäten bearbeiten</button></div>
+          <div class="focus-list">
+            <div class="task"><div class="task-index">01</div><div><strong>ProBeMo</strong><span>Audit-Log / Löschungen prüfen + Ministeriums-Viewer stabilisieren</span></div><div class="arrow">→</div></div>
+            <div class="task"><div class="task-index">02</div><div><strong>Muneasy 2.0</strong><span>Produktwelt-Gerüst abschließen und Demo-Bereich sauber öffnen</span></div><div class="arrow">→</div></div>
+            <div class="task"><div class="task-index">03</div><div><strong>SpencerHill 2027</strong><span>Bambino-Club-Welt und fehlende Assets konsolidieren</span></div><div class="arrow">→</div></div>
+          </div>
+        </article>
+
+        <article class="card section-card">
+          <div class="section-head"><div><div class="eyebrow">portfolio radar</div><h3>Project Orbit</h3></div><small>Nähe = Aufmerksamkeit</small></div>
+          <div class="orbit-wrap">
+            <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
+            <div class="orbit-center"><div><strong>MCC</strong><span>CONTROL</span></div></div>
+            <div class="node n1 hot" style="--node:#ff6f7f">ProBeMo</div>
+            <div class="node n2" style="--node:#63d7ff">ADM</div>
+            <div class="node n3" style="--node:#5ae0a0">SpencerHill</div>
+            <div class="node n4" style="--node:#b66cff">muneasy 2.0</div>
+            <div class="node n5" style="--node:#ffd36a">MOON</div>
+            <div class="node n6" style="--node:#ff8d74">ProBe Kampagne</div>
+          </div>
+        </article>
+      </section>
+
+      <section class="project-section" id="projects">
+        <div class="projects-head">
+          <div><div class="eyebrow">portfolio</div><h2>Alle Projekte</h2></div>
+          <div class="filters" id="filters">
+            <button class="filter active" data-filter="all">Alle</button>
+            <button class="filter" data-filter="client">Kunden</button>
+            <button class="filter" data-filter="internal">DRK / intern</button>
+            <button class="filter" data-filter="own">muneasy lab</button>
+            <button class="filter" data-filter="waiting">Wartet</button>
+          </div>
+        </div>
+        <div class="projects" id="projectGrid"></div>
+      </section>
+
+      <section class="project-section">
+        <article class="card section-card">
+          <div class="section-head"><div><div class="eyebrow">money layer</div><h3>Revenue & Pipeline</h3></div><small>bewusst simpel · sofort lesbar</small></div>
+          <div class="revenue">
+            <div class="revbox"><span>bereits fakturiert</span><strong>4.999 €</strong></div>
+            <div class="revbox"><span>laufend / geplant</span><strong>390 € / Mo.</strong></div>
+            <div class="revbox"><span>Pipeline</span><strong>2+ offen</strong></div>
+          </div>
+        </article>
+      </section>
+    </div>
+  </main>
+</div>
+
+
+<div class="workspace" id="workspace">
+  <div class="workspace-backdrop" id="wsBackdrop"></div>
+  <aside class="workspace-panel">
+    <div class="ws-head">
+      <div class="ws-headrow">
+        <div class="ws-titlewrap">
+          <div class="ws-icon" id="wsIcon">PR</div>
+          <div>
+            <div class="eyebrow" id="wsType">KUNDE · AKTIV</div>
+            <h2 id="wsTitle">Projekt</h2>
+            <div class="ws-sub" id="wsDesc"></div>
+          </div>
+        </div>
+        <button class="ws-close" id="wsClose">×</button>
+      </div>
+      <div class="ws-tabs">
+        <button class="ws-tab active" data-pane="home">Übersicht</button>
+        <button class="ws-tab" data-pane="ideas">Ideen</button>
+        <button class="ws-tab" data-pane="features">Features</button>
+        <button class="ws-tab" data-pane="notes">Notizen</button>
+        <button class="ws-tab" data-pane="links">Links</button>
+      </div>
+    </div>
+    <div class="ws-body">
+      <section class="ws-pane active" data-pane-content="home">
+        <div class="ws-overview">
+          <div class="ws-stat"><span>Status</span><strong id="wsStatus"></strong></div>
+          <div class="ws-stat"><span>Priorität</span><strong id="wsPriority"></strong></div>
+          <div class="ws-stat"><span>Fortschritt</span><strong id="wsProgress"></strong></div>
+          <div class="ws-stat"><span>Einträge</span><strong id="wsItemCount"></strong></div>
+        </div>
+        <div class="ws-next"><div class="eyebrow">next step</div><strong id="wsNext"></strong></div>
+
+        <div class="capture">
+          <div class="capture-top">
+            <input id="quickText" placeholder="Idee, Feature, Aufgabe oder Entscheidung festhalten …">
+            <select id="quickType">
+              <option value="idea">Idee</option>
+              <option value="feature">Feature</option>
+              <option value="task">Aufgabe</option>
+              <option value="decision">Entscheidung</option>
+            </select>
+            <button id="quickAdd">+</button>
+          </div>
+          <small>Enter genügt. Der Eintrag landet direkt im Projekt.</small>
+        </div>
+
+        <div class="item-section">
+          <div class="item-head"><h4>Zuletzt festgehalten</h4><span id="recentCount"></span></div>
+          <div class="item-list" id="recentItems"></div>
+        </div>
+      </section>
+
+      <section class="ws-pane" data-pane-content="ideas">
+        <div class="capture">
+          <div class="capture-top">
+            <input id="ideaText" placeholder="Neue Idee für dieses Projekt …">
+            <select id="ideaType">
+              <option value="idea">Idee</option>
+              <option value="feature">Feature</option>
+              <option value="task">Aufgabe</option>
+              <option value="decision">Entscheidung</option>
+            </select>
+            <button id="ideaAdd">+</button>
+          </div>
+          <small>Alles darf erst einmal ungeordnet rein. Sortieren kommt später.</small>
+        </div>
+        <div class="item-list" id="allItems"></div>
+      </section>
+
+      <section class="ws-pane" data-pane-content="features">
+        <div class="item-head"><h4>Feature Flow</h4><span>Klick auf ein Feature → nächste Stufe</span></div>
+        <div class="feature-board" id="featureBoard"></div>
+      </section>
+
+      <section class="ws-pane" data-pane-content="notes">
+        <div class="item-head"><h4>Projekt-Notizen</h4><span>Freie Fläche für Kontext, Gedanken, Entscheidungen</span></div>
+        <textarea class="notes-area" id="notesArea" placeholder="Was muss Pip über dieses Projekt wissen?"></textarea>
+        <button class="btn primary save-note" id="saveNotes">Notizen speichern</button>
+      </section>
+
+      <section class="ws-pane" data-pane-content="links">
+        <div class="item-head"><h4>Projektlinks</h4><span>GitHub · Netlify · Supabase · Canva · Live</span></div>
+        <div class="capture">
+          <div class="capture-top">
+            <input id="linkLabel" placeholder="Name, z. B. Netlify">
+            <input id="linkUrl" placeholder="https://…">
+            <button id="linkAdd">+</button>
+          </div>
+        </div>
+        <div class="link-list" id="linkList"></div>
+      </section>
+    </div>
+  </aside>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-card">
+    <div class="modal-head"><div><div class="eyebrow">MCC entry</div><h3 id="modalTitle">Neues Projekt</h3></div><button class="close" id="closeModal">×</button></div>
+    <form id="projectForm">
+      <div class="formgrid">
+        <div class="field full"><label>Projektname</label><input id="fName" required placeholder="z. B. Kunde · Projekt"></div>
+        <div class="field"><label>Bereich</label><select id="fType"><option value="client">Kunde</option><option value="internal">DRK / intern</option><option value="own">muneasy lab</option></select></div>
+        <div class="field"><label>Status</label><select id="fStatus"><option>Aktiv</option><option>Planung</option><option>Wartet</option><option>Review</option><option>Wartung</option></select></div>
+        <div class="field full"><label>Nächster konkreter Schritt</label><input id="fNext" placeholder="Genau eine Sache"></div>
+        <div class="field"><label>Priorität</label><select id="fPriority"><option>Jetzt</option><option>Danach</option><option>Irgendwann</option></select></div>
+        <div class="field"><label>Fortschritt %</label><input id="fProgress" type="number" min="0" max="100" value="20"></div>
+      </div>
+      <div class="modal-actions"><button type="button" class="btn" id="cancelModal">Abbrechen</button><button class="btn primary">Im MCC anlegen</button></div>
+    </form>
+  </div>
+</div>
+
+<script>
+const seed = [
+ {name:"ProBeMo",type:"client",status:"Aktiv",priority:"Jetzt",progress:88,desc:"Ministeriumsreife · Reporting · Rollen · Audit",next:"Audit-Log & Löschungen prüfen",grad:"linear-gradient(90deg,#46d8c7,#5e8cff)",tint:"linear-gradient(180deg, rgba(70,216,199,.09), rgba(13,15,21,.98) 38%, rgba(13,15,21,.98))"},
+ {name:"ProBe Website",type:"client",status:"Aktiv",priority:"Danach",progress:82,desc:"Redesign · Datenschutz · Inhalte",next:"Redesign-Branch finalisieren",grad:"linear-gradient(90deg,#38d7c9,#72b6ff)",tint:"linear-gradient(180deg, rgba(56,215,201,.08), rgba(13,15,21,.98) 38%, rgba(13,15,21,.98))"},
+ {name:"ProBe Kampagne",type:"client",status:"Planung",priority:"Jetzt",progress:66,desc:"Einrichtungen · Azubis · wissenschaftliche Basis",next:"Master-Hintergründe festziehen",grad:"linear-gradient(90deg,#ff8d74,#ffba7a)",tint:"linear-gradient(180deg, rgba(255,141,116,.10), rgba(13,15,21,.98) 38%, rgba(13,15,21,.98))"},
+ {name:"SpencerHill 2027",type:"client",status:"Aktiv",priority:"Jetzt",progress:72,desc:"App · Bambino Club · Relaunch 2027",next:"Assets & Bambino-Welt konsolidieren",grad:"linear-gradient(90deg,#4fc99e,#7fd18b)",tint:"linear-gradient(180deg, rgba(79,201,158,.10), rgba(13,15,21,.98) 38%, rgba(13,15,21,.98))"},
+ {name:"ADM",type:"internal",status:"Aktiv",priority:"Danach",progress:80,desc:"Ausgabe · Klassen · intelligente Imports",next:"Netzwerkstellen-Workflow bauen",grad:"linear-gradient(90deg,#ff8d74,#ffffff 180%)",tint:"linear-gradient(180deg, rgba(255,141,116,.09), rgba(13,15,21,.98) 38%, rgba(13,15,21,.98))"},
+ {name:"AsA Startklar",type:"internal",status:"Planung",priority:"Danach",progress:58,desc:"Interaktive Tablet-Einweisung · Lernportal",next:"Intelligence-Flow weiterbauen",grad:"linear-gradient(90deg,#4cc9f0,#7209b7)",tint:"linear-gradient(180deg, rgba(76,201,240,.08), rgba(13,15,21,.98) 38%, rgba(13,15,21,.98))"},
+ {name:"muneasy 2.0",type:"own",status:"Aktiv",priority:"Jetzt",progress:74,desc:"Website · Produktwelt · Demos",next:"Demo-Bereich ans Gerüst anbinden",grad:"linear-gradient(90deg,#ff8d74,#d865ff,#63d7ff)",tint:"linear-gradient(180deg, rgba(216,101,255,.10), rgba(13,15,21,.98) 38%, rgba(13,15,21,.98))"},
+ {name:"MOON",type:"own",status:"Wartet",priority:"Irgendwann",progress:41,desc:"Point & Click · Deep Field · Weltbau",next:"V7.4 Deep-Field verfeinern",grad:"linear-gradient(90deg,#8e78ff,#4b65df)",tint:"linear-gradient(180deg, rgba(142,120,255,.10), rgba(13,15,21,.98) 38%, rgba(13,15,21,.98))"}
+];
+
+let projects = JSON.parse(localStorage.getItem("mcc-projects")||"null") || seed;
+let currentFilter="all";
+
+const grid=document.getElementById("projectGrid");
+const search=document.getElementById("search");
+function typeLabel(t){return t==="client"?"Kunde":t==="internal"?"DRK / intern":"muneasy lab"}
+function render(){
+  const q=search.value.trim().toLowerCase();
+  const list=projects.filter(p=>{
+    const filterOk=currentFilter==="all" || p.type===currentFilter || (currentFilter==="waiting" && p.status==="Wartet");
+    const queryOk=!q || [p.name,p.desc,p.next,p.status,p.priority].join(" ").toLowerCase().includes(q);
+    return filterOk&&queryOk;
+  });
+  grid.innerHTML=list.map((p,i)=>`
+    <article class="card project" style="--project-grad:${p.grad||'var(--grad)'};--project-tint:${p.tint||"linear-gradient(180deg,rgba(17,20,27,.98),rgba(13,15,21,.98))"}" data-index="${projects.indexOf(p)}">
+      <div class="project-top"><div class="project-icon">${p.name.slice(0,2).toUpperCase()}</div><div class="pstatus">${typeLabel(p.type)} · ${p.status}</div></div>
+      <h4>${p.name}</h4>
+      <div class="desc">${p.desc||"Noch keine Beschreibung."}</div>
+      <div class="project-meta">
+        <div class="meta-line"><span>Priorität</span><b>${p.priority}</b></div>
+        <div class="meta-line"><span>Fortschritt</span><b>${p.progress}%</b></div>
+        <div class="progress"><span style="width:${p.progress}%"></span></div>
+      </div>
+      <div class="project-bottom"><div class="next">${p.next||"Nächster Schritt fehlt"}</div><button class="open" title="Projekt öffnen">↗</button></div>
+    </article>`).join("");
+  document.getElementById("activeCount").textContent=projects.filter(p=>p.status==="Aktiv").length;
+}
+render();
+
+search.addEventListener("input",render);
+document.querySelectorAll("[data-scroll]").forEach(b=>b.onclick=()=>document.getElementById(b.dataset.scroll).scrollIntoView({behavior:"smooth"}));
+document.querySelectorAll("[data-filter]").forEach(b=>b.onclick=()=>{
+  currentFilter=b.dataset.filter;
+  document.querySelectorAll(".filter").forEach(x=>x.classList.toggle("active",x.dataset.filter===currentFilter));
+  render(); document.getElementById("projects").scrollIntoView({behavior:"smooth"});
+});
+document.getElementById("filters").addEventListener("click",e=>{
+  if(!e.target.matches(".filter")) return;
+  currentFilter=e.target.dataset.filter;
+  document.querySelectorAll(".filter").forEach(x=>x.classList.toggle("active",x===e.target));
+  render();
+});
+
+const modal=document.getElementById("modal");
+const openModal=()=>modal.classList.add("show");
+const closeModal=()=>modal.classList.remove("show");
+document.getElementById("newProject").onclick=openModal;
+document.getElementById("closeModal").onclick=closeModal;
+document.getElementById("cancelModal").onclick=closeModal;
+modal.addEventListener("click",e=>{if(e.target===modal)closeModal()});
+document.getElementById("projectForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const p={
+    name:document.getElementById("fName").value.trim(),
+    type:document.getElementById("fType").value,
+    status:document.getElementById("fStatus").value,
+    priority:document.getElementById("fPriority").value,
+    progress:+document.getElementById("fProgress").value||0,
+    next:document.getElementById("fNext").value.trim(),
+    desc:"Neu im MCC angelegt",
+    grad:"linear-gradient(90deg,#ff8d74,#d865ff,#63d7ff)",
+    tint:"linear-gradient(180deg, rgba(216,101,255,.10), rgba(13,15,21,.98) 38%, rgba(13,15,21,.98))"
+  };
+  projects.unshift(p);
+  localStorage.setItem("mcc-projects",JSON.stringify(projects));
+  e.target.reset(); closeModal(); render();
+});
+
+document.getElementById("focusBtn").onclick=()=>{
+  document.body.classList.toggle("focus-on");
+  const on=document.body.classList.contains("focus-on");
+  document.querySelectorAll(".project").forEach(el=>{
+    const p=projects[+el.dataset.index];
+    el.classList.toggle("hidden",on && p.priority!=="Jetzt");
+  });
+  document.getElementById("focusBtn").textContent=on?"Focus aktiv":"Focus mode";
+};
+
+grid.addEventListener("click",e=>{
+  const card=e.target.closest(".project");
+  if(!card)return;
+  const p=projects[+card.dataset.index];
+  if(e.target.classList.contains("open")){
+    alert(`${p.name}\n\nStatus: ${p.status}\nPriorität: ${p.priority}\n\nNEXT → ${p.next}`);
+  }
+});
+
+const now=new Date();
+document.getElementById("datePill").textContent=new Intl.DateTimeFormat("de-DE",{weekday:"long",day:"2-digit",month:"long"}).format(now);
+
+// ===== MCC V0.2 · per-project workspace =====
+let currentProjectIndex = null;
+
+function ensureProjectData(p){
+  if(!p.items) p.items=[];
+  if(!p.notes) p.notes="";
+  if(!p.links) p.links=[];
+  p.items.forEach(x=>{
+    if(!x.stage) x.stage = x.type==="feature" ? "backlog" : "inbox";
+    if(!x.created) x.created = Date.now();
+    if(x.aiLoading === undefined) x.aiLoading = false;
+  });
+}
+
+function saveProjects(){
+  localStorage.setItem("mcc-projects", JSON.stringify(projects));
+}
+
+function formatStamp(ts){
+  try{
+    return new Intl.DateTimeFormat("de-DE",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}).format(new Date(ts));
+  }catch{return "jetzt"}
+}
+
+function escapeHTML(value){
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function herrmannReviewHTML(review){
+  if(!review) return "";
+  const labelMap={stark:"STARK",gut:"GUT",meh:"MEH",riskant:"RISKANT"};
+  return `<div class="herrmann-review" data-verdict="${escapeHTML(review.verdict)}">
+    <div class="herrmann-review-top">
+      <div class="herrmann-review-name"><span class="herrmann-dot"></span> Herrmann sagt</div>
+      <div class="herrmann-verdict">
+        <strong>${labelMap[review.verdict]||escapeHTML(review.verdict)}</strong>
+        <span class="herrmann-score">${escapeHTML(review.score)}/10</span>
+      </div>
+    </div>
+    <p>${escapeHTML(review.summary)}</p>
+    <div class="herrmann-review-grid">
+      <div class="herrmann-mini"><span>Achtung</span><b>${escapeHTML(review.watchout||"Nichts Dramatisches.")}</b></div>
+      <div class="herrmann-mini"><span>Next</span><b>${escapeHTML(review.next_step)}</b></div>
+    </div>
+  </div>`;
+}
+
+function itemHTML(item, idx){
+  const labels={idea:"Idee",feature:"Feature",task:"Aufgabe",decision:"Entscheidung"};
+  return `<div class="idea-item">
+    <span class="idea-type ${escapeHTML(item.type)}">${labels[item.type]||escapeHTML(item.type)}</span>
+    <div class="idea-copy"><strong>${escapeHTML(item.text)}</strong><small>${formatStamp(item.created)}</small></div>
+    <div class="idea-actions">
+      <button class="herrmann-ask" data-herrmann="${idx}" title="Herrmann fragen"><span class="herrmann-dot"></span>Herrmann?</button>
+      ${item.type==="idea" ? `<button data-convert="${idx}" title="Als Feature planen">→F</button>`:""}
+      <button data-delete="${idx}" title="Löschen">×</button>
+    </div>
+    ${item.aiError ? `<div class="herrmann-error">${escapeHTML(item.aiError)}</div>` : ""}
+    ${herrmannReviewHTML(item.aiReview)}
+  </div>`;
+}
+
+function renderWorkspace(){
+  if(currentProjectIndex===null) return;
+  const p=projects[currentProjectIndex];
+  ensureProjectData(p);
+
+  document.getElementById("wsIcon").textContent=p.name.slice(0,2).toUpperCase();
+  document.getElementById("wsType").textContent=`${typeLabel(p.type).toUpperCase()} · ${p.status.toUpperCase()}`;
+  document.getElementById("wsTitle").textContent=p.name;
+  document.getElementById("wsDesc").textContent=p.desc||"";
+  document.getElementById("wsStatus").textContent=p.status;
+  document.getElementById("wsPriority").textContent=p.priority;
+  document.getElementById("wsProgress").textContent=`${p.progress}%`;
+  document.getElementById("wsNext").textContent=p.next||"Noch nicht definiert";
+  document.getElementById("wsItemCount").textContent=p.items.length;
+  document.getElementById("notesArea").value=p.notes||"";
+
+  const latest=[...p.items].sort((a,b)=>b.created-a.created).slice(0,5);
+  document.getElementById("recentCount").textContent=`${p.items.length} gesamt`;
+  document.getElementById("recentItems").innerHTML=latest.length
+    ? latest.map(x=>itemHTML(x,p.items.indexOf(x))).join("")
+    : `<div class="empty-note">Noch nichts festgehalten. Genau dafür ist die Quick-Capture da.</div>`;
+
+  document.getElementById("allItems").innerHTML=p.items.length
+    ? [...p.items].sort((a,b)=>b.created-a.created).map(x=>itemHTML(x,p.items.indexOf(x))).join("")
+    : `<div class="empty-note">Ideen, Features, Aufgaben und Entscheidungen sammeln sich hier.</div>`;
+
+  renderFeatureBoard(p);
+  renderLinks(p);
+}
+
+function renderFeatureBoard(p){
+  const stages=[
+    ["backlog","Backlog"],
+    ["planned","Geplant"],
+    ["doing","In Arbeit"],
+    ["done","Erledigt"]
+  ];
+  const features=p.items.filter(x=>x.type==="feature");
+  document.getElementById("featureBoard").innerHTML=stages.map(([key,label])=>{
+    const items=features.filter(x=>(x.stage||"backlog")===key);
+    return `<div class="feature-col">
+      <h5>${label} · ${items.length}</h5>
+      ${items.map(x=>`<div class="feature-chip" data-feature-index="${p.items.indexOf(x)}">${x.text}</div>`).join("") || `<div class="empty-note">—</div>`}
+    </div>`;
+  }).join("");
+}
+
+function renderLinks(p){
+  document.getElementById("linkList").innerHTML=p.links.length
+    ? p.links.map((l,i)=>`<div class="link-row">
+        <input value="${l.label||""}" data-link-label="${i}">
+        <input value="${l.url||""}" data-link-url="${i}">
+        <button data-link-open="${i}">Öffnen ↗</button>
+      </div>`).join("")
+    : `<div class="empty-note">Noch keine Projektlinks hinterlegt.</div>`;
+}
+
+function openWorkspace(index){
+  currentProjectIndex=index;
+  ensureProjectData(projects[index]);
+  renderWorkspace();
+  document.getElementById("workspace").classList.add("show");
+  document.body.style.overflow="hidden";
+}
+
+function closeWorkspace(){
+  document.getElementById("workspace").classList.remove("show");
+  document.body.style.overflow="";
+  currentProjectIndex=null;
+}
+
+document.getElementById("wsClose").onclick=closeWorkspace;
+document.getElementById("wsBackdrop").onclick=closeWorkspace;
+
+document.querySelectorAll(".ws-tab").forEach(tab=>{
+  tab.onclick=()=>{
+    document.querySelectorAll(".ws-tab").forEach(x=>x.classList.toggle("active",x===tab));
+    document.querySelectorAll(".ws-pane").forEach(p=>p.classList.toggle("active",p.dataset.paneContent===tab.dataset.pane));
+  };
+});
+
+function addItem(text,type){
+  if(currentProjectIndex===null || !text.trim()) return;
+  const p=projects[currentProjectIndex];
+  ensureProjectData(p);
+  p.items.push({
+    text:text.trim(),
+    type,
+    stage:type==="feature"?"backlog":"inbox",
+    created:Date.now()
+  });
+  saveProjects(); renderWorkspace();
+}
+
+document.getElementById("quickAdd").onclick=()=>{
+  const input=document.getElementById("quickText");
+  addItem(input.value,document.getElementById("quickType").value);
+  input.value=""; input.focus();
+};
+document.getElementById("quickText").addEventListener("keydown",e=>{
+  if(e.key==="Enter"){e.preventDefault();document.getElementById("quickAdd").click()}
+});
+document.getElementById("ideaAdd").onclick=()=>{
+  const input=document.getElementById("ideaText");
+  addItem(input.value,document.getElementById("ideaType").value);
+  input.value=""; input.focus();
+};
+document.getElementById("ideaText").addEventListener("keydown",e=>{
+  if(e.key==="Enter"){e.preventDefault();document.getElementById("ideaAdd").click()}
+});
+
+
+async function askHerrmann(itemIndex, button){
+  if(currentProjectIndex===null) return;
+  const p=projects[currentProjectIndex];
+  const item=p.items[itemIndex];
+  if(!item) return;
+
+  item.aiError="";
+  if(button){
+    button.classList.add("loading");
+    button.innerHTML='<span class="herrmann-dot"></span>denkt…';
+  }
+
+  const contextItems=p.items
+    .filter((_,i)=>i!==itemIndex)
+    .slice(-24)
+    .map(x=>({text:x.text,type:x.type,stage:x.stage}));
+
+  const payload={
+    project:{
+      name:p.name,
+      description:p.desc||"",
+      status:p.status||"",
+      priority:p.priority||"",
+      progress:p.progress||0,
+      next_step:p.next||"",
+      notes:(p.notes||"").slice(0,3000),
+      existing_items:contextItems
+    },
+    item:{
+      text:item.text,
+      type:item.type,
+      stage:item.stage||""
+    },
+    mood:document.body.dataset.mood||"okay"
+  };
+
+  try{
+    const res=await fetch("/api/herrmann",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(payload)
+    });
+
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok){
+      throw new Error(data.error || `Herrmann meldet Fehler ${res.status}.`);
+    }
+
+    item.aiReview={
+      verdict:data.verdict,
+      score:data.score,
+      summary:data.summary,
+      watchout:data.watchout,
+      next_step:data.next_step,
+      reviewed_at:Date.now()
+    };
+    item.aiError="";
+    saveProjects();
+    renderWorkspace();
+  }catch(err){
+    item.aiError=err?.message || "Herrmann ist gerade nicht erreichbar.";
+    saveProjects();
+    renderWorkspace();
+  }
+}
+
+function workspaceItemAction(e){
+  if(currentProjectIndex===null) return;
+  const p=projects[currentProjectIndex];
+
+  const herrmannBtn=e.target.closest("[data-herrmann]");
+  if(herrmannBtn){
+    askHerrmann(+herrmannBtn.dataset.herrmann,herrmannBtn);
+    return;
+  }
+  if(e.target.dataset.delete!==undefined){
+    p.items.splice(+e.target.dataset.delete,1);
+    saveProjects();renderWorkspace();
+  }
+  if(e.target.dataset.convert!==undefined){
+    const item=p.items[+e.target.dataset.convert];
+    item.type="feature"; item.stage="backlog";
+    saveProjects();renderWorkspace();
+  }
+}
+document.getElementById("recentItems").addEventListener("click",workspaceItemAction);
+document.getElementById("allItems").addEventListener("click",workspaceItemAction);
+
+document.getElementById("featureBoard").addEventListener("click",e=>{
+  const chip=e.target.closest("[data-feature-index]");
+  if(!chip || currentProjectIndex===null) return;
+  const p=projects[currentProjectIndex];
+  const item=p.items[+chip.dataset.featureIndex];
+  const order=["backlog","planned","doing","done"];
+  item.stage=order[(order.indexOf(item.stage||"backlog")+1)%order.length];
+  saveProjects();renderWorkspace();
+});
+
+document.getElementById("saveNotes").onclick=()=>{
+  if(currentProjectIndex===null)return;
+  projects[currentProjectIndex].notes=document.getElementById("notesArea").value;
+  saveProjects();
+  const btn=document.getElementById("saveNotes");
+  const old=btn.textContent;btn.textContent="Gespeichert ✓";
+  setTimeout(()=>btn.textContent=old,900);
+};
+
+document.getElementById("linkAdd").onclick=()=>{
+  if(currentProjectIndex===null)return;
+  const label=document.getElementById("linkLabel").value.trim();
+  const url=document.getElementById("linkUrl").value.trim();
+  if(!label && !url)return;
+  const p=projects[currentProjectIndex];ensureProjectData(p);
+  p.links.push({label:label||"Link",url});
+  document.getElementById("linkLabel").value="";
+  document.getElementById("linkUrl").value="";
+  saveProjects();renderWorkspace();
+};
+document.getElementById("linkList").addEventListener("input",e=>{
+  if(currentProjectIndex===null)return;
+  const p=projects[currentProjectIndex];
+  if(e.target.dataset.linkLabel!==undefined)p.links[+e.target.dataset.linkLabel].label=e.target.value;
+  if(e.target.dataset.linkUrl!==undefined)p.links[+e.target.dataset.linkUrl].url=e.target.value;
+  saveProjects();
+});
+document.getElementById("linkList").addEventListener("click",e=>{
+  if(currentProjectIndex===null)return;
+  if(e.target.dataset.linkOpen!==undefined){
+    const u=projects[currentProjectIndex].links[+e.target.dataset.linkOpen].url;
+    if(u) window.open(u,"_blank");
+  }
+});
+
+// Override card opening: whole card opens workspace
+grid.addEventListener("click",e=>{
+  const card=e.target.closest(".project");
+  if(!card)return;
+  e.stopImmediatePropagation();
+  openWorkspace(+card.dataset.index);
+}, true);
+
+// Seed a few real examples once, so V0.2 is immediately legible.
+if(!localStorage.getItem("mcc-v02-seeded")){
+  const samples={
+    "ProBeMo":[
+      ["Newsfeed mit Landes-/Aufenthalts-APIs und Anpinnen","feature","planned"],
+      ["Teilnehmerkarten vollständig klickbar machen","feature","backlog"],
+      ["Klarnamen in Begleiteransicht","feature","doing"],
+      ["Viewer darf keine internen Notizen sehen","decision","inbox"]
+    ],
+    "SpencerHill 2027":[
+      ["Push-Sound-Idee mit Zitaten","idea","inbox"],
+      ["Sprachversionen IT / EN","feature","backlog"],
+      ["Bambino Club / Für kleine Fans","feature","doing"],
+      ["2027 Theme dunkelgrün","decision","inbox"]
+    ],
+    "muneasy 2.0":[
+      ["Produktwelt mit echten interaktiven Demos","feature","doing"],
+      ["MCC als zentrale Steuerzentrale","feature","doing"],
+      ["Demos erst nach Ende der Story öffnen","decision","inbox"]
+    ],
+    "ADM":[
+      ["BBI-Listen intelligent auf bestehende Schul-/Klassennamen mappen","feature","planned"],
+      ["Tabletnummern automatisch nacheinander zuordnen","feature","doing"]
+    ]
+  };
+  projects.forEach(p=>{
+    ensureProjectData(p);
+    (samples[p.name]||[]).forEach(([text,type,stage])=>{
+      if(!p.items.some(x=>x.text===text))p.items.push({text,type,stage,created:Date.now()-Math.floor(Math.random()*10000000)});
+    });
+  });
+  saveProjects();
+  localStorage.setItem("mcc-v02-seeded","1");
+}
+
+</script>
+
+<div class="mood-pod" id="moodPod">
+  <div class="mood-top">
+    <div class="pixel-wrap" aria-hidden="true">
+      <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pixel Hermann">
+        <rect width="16" height="16" fill="transparent"/>
+        <rect x="3" y="2" width="3" height="3" fill="#5ae0a0"/>
+        <rect x="10" y="2" width="3" height="3" fill="#5ae0a0"/>
+        <rect x="2" y="4" width="12" height="8" fill="#5ae0a0"/>
+        <rect x="3" y="5" width="10" height="6" fill="#6ef0b1"/>
+        <rect x="4" y="6" width="2" height="2" fill="#0b0c10"/>
+        <rect x="10" y="6" width="2" height="2" fill="#0b0c10"/>
+        <rect x="4" y="6" width="1" height="1" fill="#ffffff"/>
+        <rect x="10" y="6" width="1" height="1" fill="#ffffff"/>
+        <rect x="5" y="9" width="6" height="1" fill="#0b0c10"/>
+        <rect x="6" y="10" width="4" height="1" fill="#ff8d74"/>
+        <rect x="1" y="9" width="2" height="3" fill="#5ae0a0"/>
+        <rect x="13" y="9" width="2" height="3" fill="#5ae0a0"/>
+        <rect x="4" y="12" width="3" height="2" fill="#5ae0a0"/>
+        <rect x="9" y="12" width="3" height="2" fill="#5ae0a0"/>
+      </svg>
+    </div>
+    <div class="mood-copy">
+      <div class="eyebrow">pixel herrmann</div>
+      <strong>Wie ist deine Stimmung heute?</strong>
+      <p id="moodText">Ich passe dein MCC ein kleines bisschen an deine Tagesform an.</p>
+      <div class="mood-quote" id="moodQuote">Mission Control darf auch Gefühle haben.</div>
+    </div>
+  </div>
+  <div class="mood-controls" id="moodControls">
+    <button class="mood-btn" data-mood="happy">Top</button>
+    <button class="mood-btn" data-mood="okay">Okay</button>
+    <button class="mood-btn" data-mood="tired">Müde</button>
+    <button class="mood-btn" data-mood="sad">Traurig</button>
+    <button class="mood-btn" data-mood="chaos">Chaos</button>
+  </div>
+  <div class="sarg-banner" id="sargBanner">
+    <div class="eyebrow">herr simon sarg aktiviert</div>
+    <strong>„Es ist tragisch. Es ist finster. Aber wir erledigen trotzdem exakt eine Sache.“</strong>
+    <p>Heute wird nicht das ganze Leben repariert. Heute reicht ein winziger, heroischer Admin-Schritt.</p>
+  </div>
+</div>
+
+
+<script>
+/* ===== MCC V0.5 · working mood engine ===== */
+(() => {
+  const moodData = {
+    happy: {
+      text: "YES. Heute glüht MCC ein kleines bisschen heller mit dir.",
+      quote: "Herrmann nickt zufrieden und reicht dir imaginär einen goldenen Stern."
+    },
+    okay: {
+      text: "Stabil. Kein Feuerwerk nötig — wir arbeiten einfach elegant weiter.",
+      quote: "Man muss nicht jeden Tag Main-Character-Energy haben."
+    },
+    tired: {
+      text: "Verstanden. Heute machen wir MCC ruhiger und denken in kleinen Schritten.",
+      quote: "Herrmann empfiehlt: eine Sache. Dann gucken wir weiter."
+    },
+    sad: {
+      text: "Herr Simon Sarg wurde informiert. Maximale Dramatik, minimale Verzweiflung.",
+      quote: "„Im Tal der Tränen blinkt dennoch ein tapferes Dashboard.“"
+    },
+    chaos: {
+      text: "Aha. Ein klassischer Alles-brennt-aber-ich-seh-trotzdem-süß-aus-Tag.",
+      quote: "Herrmann zieht den Raumanzug an. Priorisiert wird trotzdem."
+    }
+  };
+
+  const buttons = [...document.querySelectorAll(".mood-btn")];
+  const text = document.getElementById("moodText");
+  const quote = document.getElementById("moodQuote");
+
+  function applyMood(mood, persist = true){
+    const selected = moodData[mood] ? mood : "okay";
+    document.body.dataset.mood = selected;
+
+    if(text) text.textContent = moodData[selected].text;
+    if(quote) quote.textContent = moodData[selected].quote;
+
+    buttons.forEach(btn => {
+      const active = btn.dataset.mood === selected;
+      btn.classList.toggle("active", active);
+      btn.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+
+    if(persist){
+      try{ localStorage.setItem("mcc-mood", selected); }catch(e){}
+    }
+  }
+
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => applyMood(btn.dataset.mood));
+  });
+
+  let saved = "okay";
+  try{ saved = localStorage.getItem("mcc-mood") || "okay"; }catch(e){}
+  applyMood(saved, false);
+
+  // Expose for future Hermann integrations.
+  window.MCCMood = { apply: applyMood, current: () => document.body.dataset.mood };
+})();
+</script>
+
+</body>
+</html>
