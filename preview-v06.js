@@ -30,7 +30,8 @@ document.write('<script type="module" src="/mcc-otp-preview.js"><\/script>');
   };
 
   ensureLink('manifest', '/manifest.webmanifest');
-  ensureLink('apple-touch-icon', '/pwa-192.png');
+  ensureLink('icon', '/muneasy-logo.png?v=1', { type:'image/png' });
+  ensureLink('apple-touch-icon', '/muneasy-logo.png?v=1');
 
   const addMeta = (name, content) => {
     if (document.head.querySelector(`meta[name="${name}"]`)) return;
@@ -44,6 +45,11 @@ document.write('<script type="module" src="/mcc-otp-preview.js"><\/script>');
   addMeta('apple-mobile-web-app-status-bar-style', 'black-translucent');
   addMeta('apple-mobile-web-app-title', 'MCC');
 
+  // Preload the exact master PNG once so header/login never appear half-painted.
+  const logoPreload = new Image();
+  logoPreload.decoding = 'async';
+  logoPreload.src = '/muneasy-logo.png?v=1';
+
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(err => {
@@ -53,28 +59,33 @@ document.write('<script type="module" src="/mcc-otp-preview.js"><\/script>');
   }
 })();
 
-// Always use the real PNG logo asset in the rendered MCC UI.
+// Always use the exact uploaded muneasy PNG in the rendered MCC UI.
 (() => {
   const frame = document.getElementById('mcc');
   if (!frame) return;
   const applyPngLogo = () => {
     const d = frame.contentDocument;
-    if (!d?.head || d.getElementById('mcc-official-png-logo')) return;
-    const style = d.createElement('style');
-    style.id = 'mcc-official-png-logo';
+    if (!d?.head) return;
+    let style = d.getElementById('mcc-official-png-logo');
+    if (!style) {
+      style = d.createElement('style');
+      style.id = 'mcc-official-png-logo';
+      d.head.appendChild(style);
+    }
     style.textContent = `
       .brand:before,
       .mcc-login-logo {
-        background-image:url('/pwa-192.png')!important;
+        background-image:url('/muneasy-logo.png?v=1')!important;
         background-position:center!important;
         background-repeat:no-repeat!important;
         background-size:contain!important;
       }
     `;
-    d.head.appendChild(style);
   };
   frame.addEventListener('load', applyPngLogo);
   if (frame.contentDocument?.readyState === 'complete') applyPngLogo();
+  setTimeout(applyPngLogo, 300);
+  setTimeout(applyPngLogo, 1000);
 })();
 
 // Mobile/cache hits can finish the iframe before preview-v07-core attaches its load listener.
