@@ -1,1 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#16c8ff"/><stop offset=".2" stop-color="#2dd6e7"/><stop offset=".4" stop-color="#ffd34f"/><stop offset=".58" stop-color="#ff9b2f"/><stop offset=".74" stop-color="#ff4b3f"/><stop offset=".88" stop-color="#ef0d8f"/><stop offset="1" stop-color="#6d00ff"/></linearGradient><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0070ff"/><stop offset=".48" stop-color="#ee148c"/><stop offset="1" stop-color="#ff7b26"/></linearGradient><filter id="s" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="5" stdDeviation="6" flood-opacity=".22"/></filter></defs><rect x="53" y="53" width="406" height="406" rx="94" fill="none" stroke="url(#g)" stroke-width="30" filter="url(#s)"/><path d="M166 256v-50c0-38 28-67 64-67 26 0 47 13 60 35 13-22 34-35 60-35 36 0 64 29 64 67v50" fill="none" stroke="url(#g2)" stroke-width="31" stroke-linecap="round" stroke-linejoin="round" filter="url(#s)"/><path d="M170 300c24 59 79 92 137 92s111-33 135-92" fill="none" stroke="url(#g2)" stroke-width="31" stroke-linecap="round" filter="url(#s)"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="muneasy">
+  <defs>
+    <linearGradient id="frame" x1="64" y1="64" x2="448" y2="448" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#21D7F7"/>
+      <stop offset=".20" stop-color="#5ED8D0"/>
+      <stop offset=".39" stop-color="#F4E85B"/>
+      <stop offset=".57" stop-color="#FF9A39"/>
+      <stop offset=".73" stop-color="#FF5C69"/>
+      <stop offset=".87" stop-color="#F02DA8"/>
+      <stop offset="1" stop-color="#8156FF"/>
+    </linearGradient>
+  </defs>
+
+  <!-- official muneasy icon: gradient rounded frame, clean white smiling m -->
+  <rect x="58" y="58" width="396" height="396" rx="102" fill="none" stroke="url(#frame)" stroke-width="31"/>
+
+  <!-- stylised lowercase m -->
+  <path d="M151 275V220c0-37 25-64 60-64 31 0 51 18 60 41 10-23 31-41 61-41 35 0 60 27 60 64v55"
+        fill="none" stroke="#FFFFFF" stroke-width="31" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- smile -->
+  <path d="M154 311c27 57 72 86 117 86 46 0 91-29 118-86"
+        fill="none" stroke="#FFFFFF" stroke-width="31" stroke-linecap="round"/>
+</svg>
