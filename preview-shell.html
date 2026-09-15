@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07090f">
+  <title>MCC Preview</title>
+  <style>
+    html,body,iframe{margin:0;width:100%;height:100%;border:0;background:#07090f}
+    body{overflow:hidden}
+  </style>
+</head>
+<body>
+  <iframe id="mcc" src="/index.html" title="MCC"></iframe>
+  <script src="/preview-v06.js"></script>
+  <script>
+  (() => {
+    const frame = document.getElementById('mcc');
+    frame.addEventListener('load', () => {
+      const d = frame.contentDocument;
+      const w = frame.contentWindow;
+      if (!d || !w) return;
+
+      const style = d.createElement('style');
+      style.id = 'mcc-mobile-v08';
+      style.textContent = `
+        .mcc-direct-btn,.mcc-open-project{
+          border:1px solid rgba(255,255,255,.10);background:#171b24;color:#fff;
+          border-radius:10px;padding:7px 9px;font-size:10px;font-weight:800;white-space:nowrap;
+        }
+        .mcc-direct-btn:hover,.mcc-open-project:hover{border-color:rgba(99,215,255,.28);background:rgba(99,215,255,.08)}
+        .project-bottom{gap:8px}.project-bottom .next{flex:1;min-width:0}
+        .mcc-direct-btn{margin-left:auto}
+        .mcc-direct-field input{font-size:13px}
+        .mcc-direct-hint{font-size:9px;color:#747c8c;margin-top:4px;line-height:1.4}
+
+        @media(max-width:640px){
+          html,body{overscroll-behavior-y:none}
+          .app{display:block!important;width:100%!important;overflow-x:hidden!important}
+          .sidebar{display:none!important}
+          .main{width:100%!important;min-width:0!important}
+          .topbar{
+            min-height:62px!important;padding:9px 10px!important;gap:8px!important;
+            padding-top:max(9px,env(safe-area-inset-top))!important;
+          }
+          .search{max-width:none!important;min-width:0!important}
+          .search input{height:43px!important;font-size:14px!important;padding:10px 10px 10px 37px!important;border-radius:13px!important}
+          .top-actions{gap:6px!important;flex:0 0 auto!important}
+          #focusBtn{display:none!important}
+          #newProject{height:43px!important;padding:0 12px!important;border-radius:13px!important;font-size:12px!important;white-space:nowrap!important}
+
+          .content{padding:17px 11px 132px!important;max-width:none!important}
+          .hero{display:block!important;margin-bottom:16px!important}
+          .hero h1{font-size:31px!important;line-height:1.02!important;margin:6px 0 7px!important}
+          .hero p{font-size:13px!important;line-height:1.5!important;max-width:none!important}
+          .datepill{display:none!important}
+
+          .today-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;margin:15px 0 9px!important}
+          .focus-card{grid-column:1/-1!important;min-height:0!important;padding:17px!important}
+          .focus-card h2{font-size:21px!important;margin:17px 0 6px!important}
+          .focus-card p{max-width:100%!important;font-size:12px!important}
+          .focus-footer{margin-top:14px!important;font-size:10px!important;gap:8px!important}
+          .micro{min-height:108px!important;padding:14px!important}
+          .micro .num{font-size:25px!important}.micro .label{font-size:10px!important}.micro .trend{font-size:9px!important}
+          .today-grid .micro:last-child{display:flex!important}
+
+          .grid-main{grid-template-columns:1fr!important;gap:9px!important;margin-top:9px!important}
+          .section-card{padding:15px!important}
+          .section-head{margin-bottom:13px!important}
+          .task{padding:11px!important;gap:9px!important}.task strong{font-size:12px!important}.task span{font-size:10px!important}
+          .task-index{width:27px!important;height:27px!important}
+          .orbit-wrap{height:310px!important;transform:scale(.92);transform-origin:center center}
+
+          .project-section{margin-top:22px!important}
+          .projects-head{display:block!important;margin-bottom:11px!important}
+          .projects-head h2{font-size:19px!important}
+          .filters{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;gap:6px!important;padding:9px 0 2px!important;scrollbar-width:none}
+          .filters::-webkit-scrollbar{display:none}
+          .filter{flex:0 0 auto!important;padding:8px 11px!important}
+          .projects{grid-template-columns:1fr!important;gap:9px!important}
+          .project{min-height:0!important;padding:15px!important;border-radius:18px!important}
+          .project:hover{transform:none!important}
+          .project h4{font-size:16px!important;margin:13px 0 4px!important}
+          .project .desc{font-size:10px!important;min-height:0!important}
+          .project-meta{margin-top:11px!important}
+          .project-bottom{margin-top:11px!important;align-items:center!important}
+          .project-bottom .next{font-size:9px!important;line-height:1.35!important}
+          .mcc-direct-btn{min-height:34px!important;padding:7px 10px!important;font-size:9px!important}
+          .project .open{display:none!important}
+
+          .revenue{display:flex!important;overflow-x:auto!important;gap:8px!important;scroll-snap-type:x proximity;padding-bottom:2px!important}
+          .revbox{min-width:160px!important;scroll-snap-align:start!important}
+
+          .workspace-panel{width:100vw!important;max-width:none!important;height:100dvh!important;border-left:0!important}
+          .workspace-backdrop{display:none!important}
+          .ws-head{
+            padding:14px 12px 10px!important;
+            padding-top:max(14px,env(safe-area-inset-top))!important;
+          }
+          .ws-headrow{gap:8px!important}.ws-titlewrap{gap:9px!important;min-width:0!important;align-items:flex-start!important}
+          .ws-icon{width:38px!important;height:38px!important;border-radius:12px!important;flex:0 0 38px!important}
+          .ws-titlewrap>div:last-child{min-width:0!important}
+          .ws-head h2{font-size:20px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;max-width:54vw!important}
+          .ws-sub{font-size:9px!important;line-height:1.35!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important}
+          .mcc-ws-actions{gap:5px!important;flex:0 0 auto!important}
+          .mcc-edit-project{width:36px!important;height:36px!important;padding:0!important;font-size:0!important;border-radius:11px!important}
+          .mcc-edit-project:before{content:'✎';font-size:15px!important}
+          .mcc-open-project{width:36px!important;height:36px!important;padding:0!important;font-size:0!important;border-radius:11px!important}
+          .mcc-open-project:before{content:'↗';font-size:16px!important}
+          .ws-close{width:36px!important;height:36px!important;border-radius:11px!important}
+          .ws-tabs{padding-top:11px!important;gap:5px!important;scrollbar-width:none!important}
+          .ws-tabs::-webkit-scrollbar{display:none}
+          .ws-tab{padding:8px 10px!important;font-size:10px!important;flex:0 0 auto!important}
+          .ws-body{padding:13px 11px 132px!important}
+          .ws-overview{grid-template-columns:1fr 1fr!important;gap:7px!important;margin-bottom:11px!important}
+          .ws-stat{padding:11px!important;border-radius:13px!important}.ws-stat span{font-size:9px!important}.ws-stat strong{font-size:12px!important}
+          .ws-next{padding:13px!important;margin-bottom:11px!important}.ws-next strong{font-size:13px!important}
+          .capture{padding:10px!important;margin-bottom:13px!important;border-radius:15px!important}
+          .capture-top{display:grid!important;grid-template-columns:minmax(0,1fr) 104px!important;gap:7px!important}
+          .capture input{grid-column:1/-1!important;padding:10px 11px!important;font-size:12px!important}
+          .capture select{grid-column:1/2!important;width:100%!important;height:40px!important;font-size:11px!important}
+          .capture button{grid-column:2/3!important;grid-row:2!important;height:40px!important;padding:0!important;font-size:17px!important}
+          .capture small{font-size:9px!important;margin-top:7px!important}
+          .item-section{margin-top:14px!important}
+          .idea-item{grid-template-columns:1fr!important;gap:7px!important;padding:10px!important}
+          .idea-type{justify-self:start!important}
+          .idea-actions{justify-self:stretch!important;display:flex!important;gap:6px!important}
+          .idea-actions button{height:34px!important;min-width:34px!important;width:auto!important;padding:0 9px!important}
+          .idea-actions .herrmann-ask{flex:1!important}
+          .feature-board{grid-template-columns:repeat(4,78vw)!important;gap:8px!important;scroll-snap-type:x mandatory!important}
+          .feature-col{min-width:78vw!important;scroll-snap-align:start!important}
+          .link-row{grid-template-columns:1fr!important}.link-row button{min-height:40px!important}
+          .notes-area{min-height:220px!important}
+
+          .modal{padding:0!important;align-items:flex-end!important;background:rgba(4,5,8,.80)!important}
+          .modal-card{
+            width:100%!important;max-width:none!important;max-height:92dvh!important;border-radius:24px 24px 0 0!important;
+            padding:18px 13px calc(18px + env(safe-area-inset-bottom))!important;border-left:0!important;border-right:0!important;border-bottom:0!important;
+          }
+          .mcc-editor-grid{grid-template-columns:1fr!important;gap:10px!important}
+          .field input,.field select,.mcc-editor-grid textarea{font-size:16px!important;min-height:44px!important}
+          .modal-actions{position:sticky!important;bottom:0!important;background:#12151d!important;padding-top:10px!important;display:grid!important;grid-template-columns:1fr 1fr!important}
+          .modal-actions .mcc-delete{grid-column:1/-1!important;margin:0!important;order:3!important}
+          .modal-actions .btn{min-height:44px!important}
+
+          .mood-pod{left:7px!important;right:7px!important;bottom:calc(7px + env(safe-area-inset-bottom))!important}
+        }
+      `;
+      d.head.appendChild(style);
+
+      function api(){ return w.MCCV07API || null; }
+      function normalize(s){ return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+      function knownUrl(name){
+        const n = normalize(name);
+        if(n.includes('control center') || n === 'mcc') return 'https://preview--muneasycontrolcentrum.netlify.app/preview-shell.html';
+        if(n === 'adm' || n.includes('device manager')) return 'https://asadevicemanager.netlify.app';
+        if(n.includes('probemo')) return 'https://probemonitor.netlify.app';
+        if(n.includes('probe website')) return 'https://probe-sachsen-anhalt.de';
+        if(n.includes('probe kampagne')) return 'https://probe-sachsen-anhalt.de';
+        if(n.includes('bambino')) return 'https://spencerhillbambinoclub.netlify.app';
+        if(n.includes('spencerhill')) return 'https://spencerhillofficial.netlify.app';
+        if(n.includes('monitoring intelligence')) return 'https://asa-monitoring-intelligence.netlify.app';
+        if(n.includes('startklar')) return 'https://asastartklar.netlify.app';
+        if(n.includes('delivery planner')) return 'https://asadeliveryplanner.netlify.app';
+        if(n === 'moon' || n.includes('walk the moon')) return 'https://walkthemoon.netlify.app';
+        if(n.includes('muneasy 2.0') || n === 'muneasy') return 'https://muneasy.de';
+        if(n.includes('muneasy booking')) return 'https://muneasybooking.netlify.app';
+        if(n.includes('muneasy finance')) return 'https://muneasyfinance.netlify.app';
+        if(n.includes('muneasy analytics')) return 'https://muneasyanalytics.netlify.app';
+        if(n.includes('muneasy monitor')) return 'https://muneasymonitor.netlify.app';
+        if(n.includes('muneasy calendar')) return 'https://muneasycalendar.netlify.app';
+        if(n.includes('ticket radar') || n.includes('scm')) return 'https://scmticketradar.netlify.app';
+        if(n.includes('aok') && n.includes('viewer')) return 'https://aok-ph-viewer.netlify.app';
+        if(n.includes('vier fauste') || n.includes('vier fäuste')) return 'https://vierfaeustefuereinfestival.netlify.app';
+        if(n.includes('blissful')) return 'https://blissfulyogamd.netlify.app';
+        if(n.includes('werkzettel')) return 'https://werkzettel.netlify.app';
+        if(n.includes('drk hub')) return 'https://drkhubst.netlify.app';
+        return '';
+      }
+      function liveFromLinks(p){
+        const links = Array.isArray(p?.links) ? p.links : [];
+        const preferred = links.find(x => /live|preview|website|app/i.test(x.label || '') && /^https?:\/\//i.test(x.url || ''));
+        return preferred?.url || links.find(x => /^https?:\/\//i.test(x.url || ''))?.url || '';
+      }
+      function projectUrl(p){ return p?.directUrl || liveFromLinks(p) || knownUrl(p?.name); }
+
+      function hydrateDirectLinks(){
+        const a = api(); if(!a) return;
+        let changed = false;
+        a.getProjects().forEach(p => {
+          if(!p.directUrl){ const u = liveFromLinks(p) || knownUrl(p.name); if(u){ p.directUrl = u; changed = true; } }
+        });
+        if(changed) a.refresh();
+      }
+
+      function decorateCards(){
+        const a = api(); if(!a) return;
+        d.querySelectorAll('#projectGrid .project').forEach(card => {
+          const idx = Number(card.dataset.index); const p = a.getProjects()[idx]; const url = projectUrl(p);
+          let btn = card.querySelector('.mcc-direct-btn');
+          if(!url){ btn?.remove(); return; }
+          if(!btn){ btn = d.createElement('button'); btn.type='button'; btn.className='mcc-direct-btn'; btn.textContent='↗ Öffnen'; card.querySelector('.project-bottom')?.appendChild(btn); }
+          btn.dataset.url = url; btn.title = `${p.name} direkt öffnen`;
+        });
+      }
+
+      function decorateWorkspace(){
+        const a = api(); if(!a) return;
+        const idx = a.getCurrentIndex(); const p = Number.isInteger(idx) ? a.getProjects()[idx] : null; const url = projectUrl(p);
+        const actions = d.querySelector('.mcc-ws-actions'); if(!actions) return;
+        let btn = d.getElementById('mccOpenProject');
+        if(!btn){ btn=d.createElement('button'); btn.type='button'; btn.id='mccOpenProject'; btn.className='mcc-open-project'; btn.textContent='↗ Öffnen'; actions.prepend(btn); }
+        btn.style.display = url ? '' : 'none'; btn.dataset.url = url || ''; btn.title = p ? `${p.name} direkt öffnen` : 'Projekt öffnen';
+      }
+
+      function mountDirectField(value=''){
+        const grid = d.querySelector('#mccProjectEditor .mcc-editor-grid'); if(!grid || d.getElementById('mccDirectUrl')) return;
+        const field = d.createElement('div'); field.className='field full mcc-direct-field';
+        field.innerHTML='<label>Direktlink zum Projekt</label><input id="mccDirectUrl" type="url" placeholder="https://…"><div class="mcc-direct-hint">Live-App, Website oder wichtigste Projektansicht. Wird auf der Projektkarte als ↗ Öffnen angezeigt.</div>';
+        const source = d.getElementById('mccSource')?.closest('.field');
+        if(source) grid.insertBefore(field, source); else grid.appendChild(field);
+        d.getElementById('mccDirectUrl').value = value || '';
+      }
+
+      d.addEventListener('click', e => {
+        const direct = e.target.closest('.mcc-direct-btn,.mcc-open-project');
+        if(direct){ e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); const u=direct.dataset.url; if(u) w.open(u,'_blank','noopener'); return; }
+        if(e.target.closest('#newProject')) setTimeout(() => mountDirectField(''), 0);
+        if(e.target.closest('#mccEditProject')){ const a=api(), idx=a?.getCurrentIndex(), p=Number.isInteger(idx)?a.getProjects()[idx]:null; setTimeout(() => mountDirectField(projectUrl(p)), 0); }
+      }, true);
+
+      d.addEventListener('submit', e => {
+        if(e.target?.id !== 'mccProjectEditor') return;
+        const input = d.getElementById('mccDirectUrl'); if(!input) return;
+        const directUrl = input.value.trim();
+        const a = api(); const editing = d.getElementById('mccEditorTitle')?.textContent.includes('bearbeiten'); const idx = editing ? a?.getCurrentIndex() : 0;
+        setTimeout(() => { const currentApi=api(); if(currentApi && Number.isInteger(idx) && currentApi.getProjects()[idx]) currentApi.updateProject(idx,{directUrl}); setTimeout(() => { decorateCards(); decorateWorkspace(); },0); },0);
+      }, true);
+
+      const observer = new MutationObserver(() => { decorateCards(); decorateWorkspace(); });
+      observer.observe(d.body,{subtree:true,childList:true});
+
+      setTimeout(() => { hydrateDirectLinks(); decorateCards(); decorateWorkspace(); }, 80);
+    });
+  })();
+  </script>
+</body>
+</html>

@@ -1,3 +1,38 @@
 [build]
   publish = "."
   functions = "netlify/functions"
+
+# Production root serves the tested MCC shell; /index.html remains the inner core used by the shell iframe.
+[[redirects]]
+  from = "/"
+  to = "/preview-shell.html"
+  status = 200
+  force = true
+
+# MCC should always pick up fresh app code after a deploy.
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+    Content-Type = "application/manifest+json"
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Service-Worker-Allowed = "/"
+
+[[headers]]
+  for = "/pwa-*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
