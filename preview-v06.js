@@ -53,6 +53,30 @@ document.write('<script type="module" src="/mcc-otp-preview.js"><\/script>');
   }
 })();
 
+// Always use the real PNG logo asset in the rendered MCC UI.
+(() => {
+  const frame = document.getElementById('mcc');
+  if (!frame) return;
+  const applyPngLogo = () => {
+    const d = frame.contentDocument;
+    if (!d?.head || d.getElementById('mcc-official-png-logo')) return;
+    const style = d.createElement('style');
+    style.id = 'mcc-official-png-logo';
+    style.textContent = `
+      .brand:before,
+      .mcc-login-logo {
+        background-image:url('/pwa-192.png')!important;
+        background-position:center!important;
+        background-repeat:no-repeat!important;
+        background-size:contain!important;
+      }
+    `;
+    d.head.appendChild(style);
+  };
+  frame.addEventListener('load', applyPngLogo);
+  if (frame.contentDocument?.readyState === 'complete') applyPngLogo();
+})();
+
 // Mobile/cache hits can finish the iframe before preview-v07-core attaches its load listener.
 // Replay once only when MCCV07API is still missing, otherwise the first cloud import cannot start.
 setTimeout(() => {
