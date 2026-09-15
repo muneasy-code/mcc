@@ -1,2 +1,3 @@
-Trigger preview branch build for MCC V0.6 only.
-Timestamp: 2026-09-15T23:09+02:00
+Trigger preview branch build for MCC Cloud Sync.
+Timestamp: 2026-09-16T00:06+02:00
+Commit target: Supabase cloud preview
