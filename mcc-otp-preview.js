@@ -144,3 +144,4 @@ frame?.addEventListener('load', () => setTimeout(attach, 80));
 if (frame?.contentDocument?.readyState === 'complete') setTimeout(attach, 80);
 
 import '/mcc-moods-v08.js';
+import '/mcc-herrmann-compact-v081.js';
