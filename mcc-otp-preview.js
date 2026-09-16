@@ -43,13 +43,13 @@ async function patchGate(){
     <div class="mcc-login-logo" aria-hidden="true"></div>
     <div class="eyebrow">MCC CLOUD · PRIVATE</div>
     <h2>Nur dein Control Center.</h2>
-    <p>Kein öffentlicher Account-Bereich. MCC verschickt nur an ein bereits vorhandenes Konto einen 6-stelligen Einmalcode. Neue Benutzer werden hier niemals angelegt.</p>
+    <p>Kein öffentlicher Account-Bereich. MCC verschickt nur an ein bereits vorhandenes Konto einen Einmalcode. Neue Benutzer werden hier niemals angelegt.</p>
     <form id="mccOtpSendForm">
       <input id="mccOtpEmail" type="email" autocomplete="email" inputmode="email" required placeholder="deine E-Mail-Adresse">
-      <button id="mccOtpSend">6-stelligen Code senden</button>
+      <button id="mccOtpSend">Einmalcode senden</button>
     </form>
     <form id="mccOtpVerifyForm" hidden>
-      <input id="mccOtpCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000" aria-label="6-stelliger Einmalcode">
+      <input id="mccOtpCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10" pattern="[0-9]{6,10}" placeholder="Code aus der Mail" aria-label="Einmalcode aus der E-Mail">
       <button id="mccOtpVerify">Code bestätigen</button>
     </form>
     <p id="mccOtpState" class="mcc-login-state">Die Sitzung bleibt anschließend auf diesem Gerät gespeichert.</p>
@@ -81,7 +81,7 @@ async function patchGate(){
       if (error) throw error;
       localStorage.setItem('mcc-login-email', email);
       if (verifyForm) verifyForm.hidden = false;
-      stateText(status, 'Code verschickt ✓ Bleib in diesem MCC-Fenster und gib hier die 6 Ziffern aus der Mail ein.', 'ok');
+      stateText(status, 'Code verschickt ✓ Bleib in diesem MCC-Fenster und gib hier den Code aus der Mail ein.', 'ok');
       codeInput?.focus();
     } catch (err) {
       console.error('[MCC OTP] send failed', err);
@@ -93,15 +93,15 @@ async function patchGate(){
   });
 
   codeInput?.addEventListener('input', () => {
-    codeInput.value = codeInput.value.replace(/\D/g,'').slice(0,6);
+    codeInput.value = codeInput.value.replace(/\D/g,'').slice(0,10);
   });
 
   verifyForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = emailInput?.value?.trim();
     const token = codeInput?.value?.replace(/\D/g,'');
-    if (!email || !token || token.length !== 6 || !verifyBtn) {
-      stateText(status, 'Bitte den 6-stelligen Code vollständig eingeben.', 'error');
+    if (!email || !token || token.length < 6 || token.length > 10 || !verifyBtn) {
+      stateText(status, 'Bitte den Code aus der E-Mail vollständig eingeben.', 'error');
       return;
     }
     verifyBtn.disabled = true;
