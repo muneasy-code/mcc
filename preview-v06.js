@@ -1,7 +1,5 @@
 document.write('<script src="/preview-v07-core.js"><\/script>');
 
-// One-time recovery for the interrupted first cloud import: re-run the V0.7 inventory merge
-// before MCC Cloud decides whether local or server data is authoritative.
 try {
   if (!localStorage.getItem('mcc-cloud-partial-recovery-v1')) {
     localStorage.removeItem('mcc-inventory-v07');
@@ -12,8 +10,6 @@ try {
 document.write('<script type="module" src="/mcc-supabase-preview.js"><\/script>');
 document.write('<script type="module" src="/mcc-otp-preview.js"><\/script>');
 
-// PWA shell. App code itself is deliberately not cached by the service worker,
-// so a new deploy becomes visible immediately instead of getting stuck behind an old PWA cache.
 (() => {
   document.title = 'MCC · muneasy Control Center';
 
@@ -30,8 +26,8 @@ document.write('<script type="module" src="/mcc-otp-preview.js"><\/script>');
   };
 
   ensureLink('manifest', '/manifest.webmanifest');
-  ensureLink('icon', '/muneasy-logo.png?v=1', { type:'image/png' });
-  ensureLink('apple-touch-icon', '/muneasy-logo.png?v=1');
+  ensureLink('icon', '/pwa-512-v4.png', { type:'image/png' });
+  ensureLink('apple-touch-icon', '/pwa-512-v4.png');
 
   const addMeta = (name, content) => {
     if (document.head.querySelector(`meta[name="${name}"]`)) return;
@@ -45,10 +41,9 @@ document.write('<script type="module" src="/mcc-otp-preview.js"><\/script>');
   addMeta('apple-mobile-web-app-status-bar-style', 'black-translucent');
   addMeta('apple-mobile-web-app-title', 'MCC');
 
-  // Preload the exact master PNG once so header/login never appear half-painted.
   const logoPreload = new Image();
   logoPreload.decoding = 'async';
-  logoPreload.src = '/muneasy-logo.png?v=1';
+  logoPreload.src = '/pwa-512-v4.png';
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -59,7 +54,6 @@ document.write('<script type="module" src="/mcc-otp-preview.js"><\/script>');
   }
 })();
 
-// Always use the exact uploaded muneasy PNG in the rendered MCC UI.
 (() => {
   const frame = document.getElementById('mcc');
   if (!frame) return;
@@ -75,10 +69,18 @@ document.write('<script type="module" src="/mcc-otp-preview.js"><\/script>');
     style.textContent = `
       .brand:before,
       .mcc-login-logo {
-        background-image:url('/muneasy-logo.png?v=1')!important;
+        background-image:url('/pwa-512-v4.png')!important;
         background-position:center!important;
         background-repeat:no-repeat!important;
         background-size:contain!important;
+      }
+      .mcc-login-logo {
+        width:72px!important;
+        height:72px!important;
+        min-width:72px!important;
+        min-height:72px!important;
+        aspect-ratio:1/1!important;
+        display:block!important;
       }
     `;
   };
@@ -88,8 +90,6 @@ document.write('<script type="module" src="/mcc-otp-preview.js"><\/script>');
   setTimeout(applyPngLogo, 1000);
 })();
 
-// Mobile/cache hits can finish the iframe before preview-v07-core attaches its load listener.
-// Replay once only when MCCV07API is still missing, otherwise the first cloud import cannot start.
 setTimeout(() => {
   const frame = document.getElementById('mcc');
   if (!frame || window.__mccPreviewReplayDone) return;
@@ -101,7 +101,6 @@ setTimeout(() => {
   }
 }, 250);
 
-// On production, MCC's own direct link must point back to production, not the preview branch.
 if (!location.hostname.startsWith('preview--')) {
   let attempts = 0;
   const productionLinkTimer = setInterval(() => {

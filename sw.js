@@ -1,8 +1,8 @@
-const STATIC_CACHE = 'mcc-pwa-static-v1';
+const STATIC_CACHE = 'mcc-pwa-static-v2';
 const STATIC_ASSETS = new Set([
   '/manifest.webmanifest',
-  '/pwa-192.png',
-  '/pwa-maskable-512.png'
+  '/pwa-192-v4.png',
+  '/pwa-512-v4.png'
 ]);
 
 self.addEventListener('install', event => {
@@ -28,15 +28,14 @@ self.addEventListener('fetch', event => {
 
   if (STATIC_ASSETS.has(url.pathname)) {
     event.respondWith(
-      caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
+      fetch(event.request, { cache:'no-store' }).then(response => {
         const copy = response.clone();
         caches.open(STATIC_CACHE).then(cache => cache.put(event.request, copy));
         return response;
-      }))
+      }).catch(() => caches.match(event.request))
     );
     return;
   }
 
-  // Network-only for HTML/JS/CSS/app data: never let an old service-worker cache block a fresh MCC deploy.
   event.respondWith(fetch(event.request));
 });
