@@ -37,6 +37,33 @@ function extractOutputText(data) {
   return "";
 }
 
+function usageMeta(data) {
+  const usage = data?.usage || {};
+  const inputTokens = Number(usage.input_tokens || 0);
+  const outputTokens = Number(usage.output_tokens || 0);
+  const cachedInputTokens = Number(usage.input_tokens_details?.cached_tokens || 0);
+  const uncachedInputTokens = Math.max(0, inputTokens - cachedInputTokens);
+
+  // GPT-5.6 Luna standard pricing as of 2026-07-30:
+  // $0.20 / 1M uncached input, $0.02 / 1M cached input, $1.20 / 1M output.
+  const estimatedUsd =
+    (uncachedInputTokens * 0.20 + cachedInputTokens * 0.02 + outputTokens * 1.20) / 1_000_000;
+
+  return {
+    model: "gpt-5.6-luna",
+    input_tokens: inputTokens,
+    output_tokens: outputTokens,
+    cached_input_tokens: cachedInputTokens,
+    estimated_usd: Number(estimatedUsd.toFixed(8)),
+    pricing: {
+      input_per_million_usd: 0.20,
+      cached_input_per_million_usd: 0.02,
+      output_per_million_usd: 1.20,
+      effective_from: "2026-07-30"
+    }
+  };
+}
+
 export default async (request) => {
   if (request.method !== "POST") return json({ error: "Nur POST ist erlaubt." }, 405);
   if (!hostAllowed(request)) return json({ error: "Diese Anfrage gehört nicht zum MCC." }, 403);
@@ -139,7 +166,10 @@ Halte summary, watchout und next_step jeweils sehr kurz (idealerweise 1 Satz).
 
   const outputText = extractOutputText(data);
   if (!outputText) return json({ error: "Herrmann hat diesmal keine lesbare Antwort geliefert." }, 502);
-  try { return json(JSON.parse(outputText), 200); }
+  try {
+    const review = JSON.parse(outputText);
+    return json({ ...review, _usage: usageMeta(data) }, 200);
+  }
   catch { return json({ error: "Herrmanns Antwort konnte nicht gelesen werden." }, 502); }
 };
 

@@ -49,7 +49,7 @@ async function patchGate(){
       <button id="mccOtpSend">Einmalcode senden</button>
     </form>
     <form id="mccOtpVerifyForm" hidden>
-      <input id="mccOtpCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10" pattern="[0-9]{6,10}" placeholder="Code aus der Mail" aria-label="Einmalcode aus der E-Mail">
+      <input id="mccOtpCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10" pattern="[0-9]{6,10}" placeholder="Code" aria-label="Einmalcode mit 6 bis 10 Ziffern">
       <button id="mccOtpVerify">Code bestätigen</button>
     </form>
     <p id="mccOtpState" class="mcc-login-state">Die Sitzung bleibt anschließend auf diesem Gerät gespeichert.</p>
@@ -85,7 +85,12 @@ async function patchGate(){
       codeInput?.focus();
     } catch (err) {
       console.error('[MCC OTP] send failed', err);
-      stateText(status, 'Anmeldung nicht möglich. Nur das bereits freigeschaltete MCC-Konto kann einen Code erhalten.', 'error');
+      const message = String(err?.message || '').toLowerCase();
+      if (message.includes('rate') || message.includes('limit') || message.includes('too many')) {
+        stateText(status, 'Zu viele Codes angefordert. Bitte kurz warten und dann erneut versuchen.', 'error');
+      } else {
+        stateText(status, 'Anmeldung nicht möglich. Nur das bereits freigeschaltete MCC-Konto kann einen Code erhalten.', 'error');
+      }
     } finally {
       sendBtn.disabled = false;
       sendBtn.textContent = 'Code erneut senden';
@@ -101,7 +106,7 @@ async function patchGate(){
     const email = emailInput?.value?.trim();
     const token = codeInput?.value?.replace(/\D/g,'');
     if (!email || !token || token.length < 6 || token.length > 10 || !verifyBtn) {
-      stateText(status, 'Bitte den Code aus der E-Mail vollständig eingeben.', 'error');
+      stateText(status, 'Bitte den Code vollständig eingeben (6 bis 10 Ziffern).', 'error');
       return;
     }
     verifyBtn.disabled = true;
@@ -137,3 +142,5 @@ function attach(){
 
 frame?.addEventListener('load', () => setTimeout(attach, 80));
 if (frame?.contentDocument?.readyState === 'complete') setTimeout(attach, 80);
+
+import '/mcc-moods-v08.js';
